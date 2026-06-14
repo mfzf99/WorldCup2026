@@ -35,7 +35,6 @@
   <script type="text/babel">
     const { useState, useMemo, useEffect } = React;
 
-    // Pemetaan kod negara 2-huruf ISO rasmi untuk FlagCDN
     const FLAG_CODES = {
       'Mexico': 'mx', 'South Africa': 'za', 'South Korea': 'kr', 'Czechia': 'cz',
       'Canada': 'ca', 'Bosnia': 'ba', 'Qatar': 'qa', 'Switzerland': 'ch',
@@ -209,10 +208,10 @@
       return `https://flagcdn.com/w160/${code}.png`;
     }
 
-    function getMatchStatus(dateStr, timeStr) {
+    // Mengira status perlawanan dinamik menerima hantaran 'now' dari parent ticker
+    function getMatchStatus(dateStr, timeStr, now) {
       const matchTime = new Date(`${dateStr}T${timeStr}:00`);
-      const now = new Date();
-      const diffMs = now - matchTime;
+      const diffMs = now - matchTime; 
       const diffHours = diffMs / (1000 * 60 * 60);
 
       if (diffHours >= 0 && diffHours <= 2) {
@@ -220,15 +219,26 @@
       } else if (diffHours > 2) {
         return { code: 'TAMAT', label: 'TAMAT', class: 'bg-slate-800 text-slate-400 border border-slate-700' };
       } else {
-        return { code: 'AKAN_DATANG', label: 'AKAN DATANG', class: 'bg-cyan-950 text-cyan-400 border border-cyan-500/30' };
+        // Masa depan: Kira baki minit secara tepat
+        const minsLeft = Math.ceil(Math.abs(diffMs) / (1000 * 60));
+        
+        if (minsLeft <= 30) {
+          return { code: 'AKAN_DATANG', label: `MULA DLM ${minsLeft}M ⏳`, class: 'bg-amber-500/20 text-amber-400 border border-amber-500/50 animate-pulse font-extrabold' };
+        } else if (minsLeft < 1440) { // Kurang dari 24 Jam
+          const h = Math.floor(minsLeft / 60);
+          const m = minsLeft % 60;
+          return { code: 'AKAN_DATANG', label: `MULA DLM ${h}J ${m}M`, class: 'bg-cyan-950 text-cyan-400 border border-cyan-500/30 font-bold' };
+        } else {
+          return { code: 'AKAN_DATANG', label: 'AKAN DATANG', class: 'bg-slate-900 text-slate-500 border border-slate-800' };
+        }
       }
     }
 
     // ── KUMPULAN CARD (GROUP STAGE) ───────────────────────────────────────────
-    function GroupCard({ m, isFav, toggleFav }) {
+    function GroupCard({ m, isFav, toggleFav, now }) {
       const c = GC[m.g] || '#00E8FF';
       const mood = getMood(m.t);
-      const status = getMatchStatus(m.d, m.t);
+      const status = getMatchStatus(m.d, m.t, now);
       
       return (
         <div 
@@ -252,33 +262,22 @@
             </div>
 
             <div class="grid grid-cols-3 items-center gap-1 my-2">
-              {/* Home Team */}
               <div class="flex flex-col items-center text-center">
                 <div class="w-14 h-9 overflow-hidden rounded shadow-md border border-slate-800 flex items-center justify-center bg-slate-950 transform group-hover:scale-105 transition-transform duration-300">
-                  {getFlagUrl(m.h) ? (
-                    <img src={getFlagUrl(m.h)} alt={m.h} class="w-full h-full object-cover" />
-                  ) : (
-                    <span class="text-xl">🏳️</span>
-                  )}
+                  {getFlagUrl(m.h) ? <img src={getFlagUrl(m.h)} alt={m.h} class="w-full h-full object-cover" /> : <span class="text-xl">🏳️</span>}
                 </div>
                 <span class="text-[11px] font-extrabold text-slate-200 mt-2 line-clamp-1 w-full">{m.h}</span>
               </div>
 
-              {/* Center Info */}
               <div class="text-center px-1">
                 <div class="mono text-base font-black text-cyan-400 tracking-wider drop-shadow-[0_0_8px_rgba(6,182,212,0.4)]">{m.t}</div>
                 <div class="text-[8px] font-extrabold tracking-widest text-slate-500 mt-0.5">MYT</div>
                 <div class="text-[9px] font-black text-slate-600 mt-1 tracking-widest">VS</div>
               </div>
 
-              {/* Away Team */}
               <div class="flex flex-col items-center text-center">
                 <div class="w-14 h-9 overflow-hidden rounded shadow-md border border-slate-800 flex items-center justify-center bg-slate-950 transform group-hover:scale-105 transition-transform duration-300">
-                  {getFlagUrl(m.a) ? (
-                    <img src={getFlagUrl(m.a)} alt={m.a} class="w-full h-full object-cover" />
-                  ) : (
-                    <span class="text-xl">🏳️</span>
-                  )}
+                  {getFlagUrl(m.a) ? <img src={getFlagUrl(m.a)} alt={m.a} class="w-full h-full object-cover" /> : <span class="text-xl">🏳️</span>}
                 </div>
                 <span class="text-[11px] font-extrabold text-slate-200 mt-2 line-clamp-1 w-full">{m.a}</span>
               </div>
@@ -294,12 +293,12 @@
     }
 
     // ── KALAH MATI CARD (KNOCKOUT STAGE) ──────────────────────────────────────
-    function KoCard({ m }) {
+    function KoCard({ m, now }) {
       const isFinal = m.phase === 'FINAL';
       const isBronze = m.phase === 'BRONZE';
       const c = isFinal ? '#F5C518' : isBronze ? '#CD7F32' : '#00E8FF';
       const mood = getMood(m.t);
-      const status = getMatchStatus(m.d, m.t);
+      const status = getMatchStatus(m.d, m.t, now);
 
       return (
         <div 
@@ -345,10 +344,22 @@
       const [statusFilter, setStatusFilter] = useState('ALL');
       const [favOnly, setFavOnly] = useState(false);
       const [q, setQ] = useState('');
+      
+      // State masa realtime global yang menggerakkan seluruh jam dan countdown dalam sistem
+      const [now, setNow] = useState(new Date());
+
       const [favTeams, setFavTeams] = useState(() => {
         const saved = localStorage.getItem('wc2026_fav_teams');
         return saved ? JSON.parse(saved) : [];
       });
+
+      // Menghidupkan jantung sistem detik (Ticking Heartbeat)
+      useEffect(() => {
+        const interval = setInterval(() => {
+          setNow(new Date());
+        }, 1000);
+        return () => clearInterval(interval);
+      }, []);
 
       useEffect(() => {
         localStorage.setItem('wc2026_fav_teams', JSON.stringify(favTeams));
@@ -380,7 +391,7 @@
         let arr = tab === 'GS' ? GS : KO.filter(m => m.phase === tab);
         if (tab === 'GS' && grp !== 'ALL') arr = arr.filter(m => m.g === grp);
         if (statusFilter !== 'ALL') {
-          arr = arr.filter(m => getMatchStatus(m.d, m.t).code === statusFilter);
+          arr = arr.filter(m => getMatchStatus(m.d, m.t, now).code === statusFilter);
         }
         if (favOnly) {
           arr = arr.filter(m => favTeams.includes(m.h) || favTeams.includes(m.a));
@@ -394,7 +405,7 @@
           );
         }
         return arr;
-      }, [tab, grp, statusFilter, favOnly, q, favTeams]);
+      }, [tab, grp, statusFilter, favOnly, q, favTeams, now]);
 
       const groupedByDate = useMemo(() => {
         const map = {};
@@ -406,13 +417,12 @@
       }, [filteredMatches]);
 
       const nextMatch = useMemo(() => {
-        const now = new Date();
         const all = [...GS, ...KO].sort((a,b) => new Date(`${a.d}T${a.t}`) - new Date(`${b.d}T${b.t}`));
         return all.find(m => new Date(`${m.d}T${m.t}`) - now > 0);
-      }, []);
+      }, [now]);
 
       const isGS = tab === 'GS';
-      const todayStr = new Date().toLocaleDateString('sv-SE');
+      const todayStr = now.toLocaleDateString('sv-SE');
 
       return (
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -425,7 +435,7 @@
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6 relative z-10">
               <div>
                 <span class="text-xs font-extrabold tracking-widest text-amber-400 uppercase bg-amber-400/10 border border-amber-400/20 px-3 py-1 rounded-full">
-                  ⚡ ENGINE POLISHED VERSION 2.0 (HD FLAGS)
+                  ⚡ ENGINE POLISHED VERSION 3.0 (REALTIME COUNTDOWN)
                 </span>
                 <h1 class="text-3xl sm:text-5xl font-black tracking-tight text-white mt-3 bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text">
                   JADUAL PIALA DUNIA 2026
@@ -442,26 +452,43 @@
                 </div>
               </div>
 
-              {/* Countdown Widget */}
+              {/* Countdown Live Widget */}
               {nextMatch && (
-                <div class="bg-slate-950/60 border border-slate-800 p-4 rounded-2xl min-w-[280px] shadow-inner flex flex-col justify-between">
+                <div class="bg-slate-950/60 border border-slate-800 p-4 rounded-2xl min-w-[290px] shadow-inner flex flex-col justify-between">
                   <div>
                     <div class="text-[10px] font-bold tracking-widest text-slate-500 uppercase">Perlawanan Seterusnya</div>
-                    <div class="flex items-center gap-3 mt-2.5">
+                    <div class="flex items-center gap-2 mt-2.5">
                       <div class="flex items-center gap-1.5 bg-slate-900/90 px-2 py-1 rounded border border-slate-800">
-                        <img src={getFlagUrl(nextMatch.h)} alt="" class="w-5 h-3.5 object-cover rounded-sm shadow-sm" />
-                        <span class="text-xs font-bold text-slate-300 max-w-[60px] truncate">{nextMatch.h}</span>
+                        <img src={getFlagUrl(nextMatch.h)} alt="" class="w-4 h-2.5 object-cover rounded-sm shadow-sm" />
+                        <span class="text-[11px] font-bold text-slate-300 max-w-[65px] truncate">{nextMatch.h}</span>
                       </div>
-                      <span class="text-[10px] font-bold text-slate-600">VS</span>
+                      <span class="text-[9px] font-bold text-slate-600">VS</span>
                       <div class="flex items-center gap-1.5 bg-slate-900/90 px-2 py-1 rounded border border-slate-800">
-                        <img src={getFlagUrl(nextMatch.a)} alt="" class="w-5 h-3.5 object-cover rounded-sm shadow-sm" />
-                        <span class="text-xs font-bold text-slate-300 max-w-[60px] truncate">{nextMatch.a}</span>
+                        <img src={getFlagUrl(nextMatch.a)} alt="" class="w-4 h-2.5 object-cover rounded-sm shadow-sm" />
+                        <span class="text-[11px] font-bold text-slate-300 max-w-[65px] truncate">{nextMatch.a}</span>
                       </div>
                     </div>
                   </div>
-                  <div class="mt-4 flex items-baseline justify-between">
-                    <span class="mono text-2xl font-black text-amber-400">{nextMatch.t}</span>
-                    <span class="text-[10px] text-slate-400 font-semibold">{fmtDate(nextMatch.d)}</span>
+                  <div class="mt-4 flex items-baseline justify-between gap-2 border-t border-slate-900 pt-2.5">
+                    <div class="flex flex-col">
+                      <span class="mono text-xl font-black text-slate-300">{nextMatch.t}</span>
+                      <span class="text-[9px] text-slate-500 font-semibold truncate max-w-[100px]">{fmtDate(nextMatch.d)}</span>
+                    </div>
+                    <div class="text-right">
+                      <div class="text-[8px] font-bold text-slate-500 tracking-wider uppercase">Mula Dalam</div>
+                      <div class="mono text-xs font-extrabold text-amber-400 bg-amber-500/5 border border-amber-500/20 px-2 py-0.5 rounded shadow-sm">
+                        {(() => {
+                          const mTime = new Date(`${nextMatch.d}T${nextMatch.t}:00`);
+                          const diff = mTime - now;
+                          if (diff <= 0) return "Sedia Mula..";
+                          const s = Math.floor((diff / 1000) % 60);
+                          const m = Math.floor((diff / (1000 * 60)) % 60);
+                          const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+                          const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+                          return `${d > 0 ? d + 'h ' : ''}${h > 0 || d > 0 ? h + 'j ' : ''}${m}m ${s}s`;
+                        })()}
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
@@ -546,7 +573,7 @@
                   key={g}
                   onClick={() => setGrp(g)}
                   class={`px-3 py-1.5 rounded-lg text-[10px] font-black transition-all ${
-                    grp === g ? 'text-white' : 'bg-slate-900/20 text-slate-500 hover:text-slate-400'
+                    grp === g ? 'text-white' : 'bg-slate-900/20 text-slate-400 hover:text-slate-400'
                   }`}
                   style={{ backgroundColor: grp === g ? GC[g] : '', border: `1px solid ${GC[g]}20` }}
                 >
@@ -597,11 +624,12 @@
                         <GroupCard 
                           key={m.id} 
                           m={m} 
+                          now={now}
                           isFav={favTeams.includes(m.h) || favTeams.includes(m.a)} 
                           toggleFav={toggleFav}
                         />
                       ) : (
-                        <KoCard key={m.id} m={m} />
+                        <KoCard key={m.id} now={now} />
                       ))}
                     </div>
                   </div>
@@ -613,7 +641,7 @@
           {/* FOOTER */}
           <footer class="mt-16 pt-6 border-t border-slate-900 text-center text-[10px] text-slate-600 font-medium tracking-wide">
             Semua zon waktu telah diselaraskan ke Waktu Malaysia (MYT - UTC+8). <br />
-            Sistem pautan bendera menggunakan FlagCDN Engine High Resolution. Sedia untuk diguna.
+            Sistem dikuasakan oleh Real-Time Countdown Engine V3. Auto-ticking aktif.
           </footer>
 
         </div>
