@@ -3,615 +3,620 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FIFA World Cup 2026 – Jadual MYT</title>
+  <title>FIFA World Cup 2026 – Jadual Premium MYT</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
   <style>
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body { background:#030C1E; }
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@700;800&display=swap');
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #020617;
+    }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    .glass {
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #020617; }
+    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #334155; }
   </style>
 </head>
-<body>
+<body class="text-slate-100 min-h-screen">
   <div id="root"></div>
+
   <script type="text/babel">
-    const { useState, useMemo } = React;
-const FLAGS = {
-  'Mexico':'🇲🇽','South Africa':'🇿🇦','South Korea':'🇰🇷','Czechia':'🇨🇿',
-  'Canada':'🇨🇦','Bosnia':'🇧🇦','Qatar':'🇶🇦','Switzerland':'🇨🇭',
-  'Brazil':'🇧🇷','Morocco':'🇲🇦','Haiti':'🇭🇹','Scotland':'🏴󠁧󠁢󠁳󠁣󠁴󠁿',
-  'USA':'🇺🇸','Paraguay':'🇵🇾','Australia':'🇦🇺','Türkiye':'🇹🇷',
-  'Germany':'🇩🇪','Curaçao':'🇨🇼','Ivory Coast':'🇨🇮','Ecuador':'🇪🇨',
-  'Netherlands':'🇳🇱','Japan':'🇯🇵','Sweden':'🇸🇪','Tunisia':'🇹🇳',
-  'Belgium':'🇧🇪','Egypt':'🇪🇬','Iran':'🇮🇷','New Zealand':'🇳🇿',
-  'Spain':'🇪🇸','Cape Verde':'🇨🇻','Saudi Arabia':'🇸🇦','Uruguay':'🇺🇾',
-  'France':'🇫🇷','Senegal':'🇸🇳','Iraq':'🇮🇶','Norway':'🇳🇴',
-  'Argentina':'🇦🇷','Algeria':'🇩🇿','Austria':'🇦🇹','Jordan':'🇯🇴',
-  'Portugal':'🇵🇹','DR Congo':'🇨🇩','Uzbekistan':'🇺🇿','Colombia':'🇨🇴',
-  'England':'🏴󠁧󠁢󠁥󠁮󠁧󠁿','Croatia':'🇭🇷','Ghana':'🇬🇭','Panama':'🇵🇦'
-};
+    const { useState, useMemo, useEffect } = React;
 
-const GC = {
-  A:'#EF4444',B:'#F97316',C:'#22C55E',D:'#3B82F6',
-  E:'#A855F7',F:'#06B6D4',G:'#EC4899',H:'#EAB308',
-  I:'#818CF8',J:'#84CC16',K:'#F43F5E',L:'#14B8A6'
-};
+    const FLAGS = {
+      'Mexico':'🇲🇽','South Africa':'🇿🇦','South Korea':'🇰🇷','Czechia':'🇨🇿',
+      'Canada':'🇨🇦','Bosnia':'🇧🇦','Qatar':'🇶🇦','Switzerland':'🇨🇭',
+      'Brazil':'🇧🇷','Morocco':'🇲🇦','Haiti':'🇭🇹','Scotland':'🏴󠁧󠁢󠁳󠁣󠁴󠁿',
+      'USA':'🇺🇸','Paraguay':'🇵🇾','Australia':'🇦🇺','Türkiye':'🇹🇷',
+      'Germany':'🇩🇪','Curaçao':'🇨🇼','Ivory Coast':'🇨🇮','Ecuador':'🇪🇨',
+      'Netherlands':'🇳🇱','Japan':'🇯🇵','Sweden':'🇸🇪','Tunisia':'🇹🇳',
+      'Belgium':'🇧🇪','Egypt':'🇪🇬','Iran':'🇮🇷','New Zealand':'🇳🇿',
+      'Spain':'🇪🇸','Cape Verde':'🇨🇻','Saudi Arabia':'🇸🇦','Uruguay':'🇺🇾',
+      'France':'🇫🇷','Senegal':'🇸🇳','Iraq':'🇮🇶','Norway':'🇳🇴',
+      'Argentina':'🇦🇷','Algeria':'🇩🇿','Austria':'🇹🇹','Jordan':'🇯🇴',
+      'Portugal':'🇵🇹','DR Congo':'🇨🇩','Uzbekistan':'🇺🇿','Colombia':'🇨🇴',
+      'England':'🏴󠁧󠁢󠁥󠁮󠁧󠁿','Croatia':'🇭🇷','Ghana':'🇬🇭','Panama':'🇵🇦'
+    };
 
-const GROUPS = {
-  A:['Mexico','South Africa','South Korea','Czechia'],
-  B:['Canada','Bosnia','Qatar','Switzerland'],
-  C:['Brazil','Morocco','Haiti','Scotland'],
-  D:['USA','Paraguay','Australia','Türkiye'],
-  E:['Germany','Curaçao','Ivory Coast','Ecuador'],
-  F:['Netherlands','Japan','Sweden','Tunisia'],
-  G:['Belgium','Egypt','Iran','New Zealand'],
-  H:['Spain','Cape Verde','Saudi Arabia','Uruguay'],
-  I:['France','Senegal','Iraq','Norway'],
-  J:['Argentina','Algeria','Austria','Jordan'],
-  K:['Portugal','DR Congo','Uzbekistan','Colombia'],
-  L:['England','Croatia','Ghana','Panama']
-};
+    const GC = {
+      A:'#EF4444', B:'#F97316', C:'#22C55E', D:'#3B82F6',
+      E:'#A855F7', F:'#06B6D4', G:'#EC4899', H:'#EAB308',
+      I:'#6366F1', J:'#84CC16', K:'#F43F5E', L:'#14B8A6'
+    };
 
-const PHASE_LABELS = {
-  R32:'Pusingan 32', R16:'Pusingan 16', QF:'Suku Akhir',
-  SF:'Separuh Akhir', BRONZE:'Tempat Ketiga 🥉', FINAL:'🏆 GRAND FINAL'
-};
+    const GROUPS = {
+      A:['Mexico','South Africa','South Korea','Czechia'],
+      B:['Canada','Bosnia','Qatar','Switzerland'],
+      C:['Brazil','Morocco','Haiti','Scotland'],
+      D:['USA','Paraguay','Australia','Türkiye'],
+      E:['Germany','Curaçao','Ivory Coast','Ecuador'],
+      F:['Netherlands','Japan','Sweden','Tunisia'],
+      G:['Belgium','Egypt','Iran','New Zealand'],
+      H:['Spain','Cape Verde','Saudi Arabia','Uruguay'],
+      I:['France','Senegal','Iraq','Norway'],
+      J:['Argentina','Algeria','Austria','Jordan'],
+      K:['Portugal','DR Congo','Uzbekistan','Colombia'],
+      L:['England','Croatia','Ghana','Panama']
+    };
 
-const MONTHS = ['Jan','Feb','Mac','Apr','Mei','Jun','Jul','Ogs','Sep','Okt','Nov','Dis'];
-const DAYS   = ['Ahad','Isnin','Selasa','Rabu','Khamis','Jumaat','Sabtu'];
-const TODAY  = new Date().toLocaleDateString('sv-SE'); // live date
+    const PHASE_LABELS = {
+      R32:'Pusingan 32', R16:'Pusingan 16', QF:'Suku Akhir',
+      SF:'Separuh Akhir', BRONZE:'Tempat Ketiga 🥉', FINAL:'🏆 GRAND FINAL'
+    };
 
-function fmtDate(s) {
-  const d = new Date(s + 'T12:00:00');
-  return `${DAYS[d.getDay()]}, ${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
-}
-function getMood(t) {
-  const h = parseInt(t);
-  if (h < 6)  return { icon:'🌙', label:'Tengah Malam' };
-  if (h < 12) return { icon:'🌅', label:'Awal Pagi' };
-  if (h < 17) return { icon:'☀️', label:'Tengahari' };
-  return { icon:'🌆', label:'Malam' };
-}
+    const MONTHS = ['Jan','Feb','Mac','Apr','Mei','Jun','Jul','Ogs','Sep','Okt','Nov','Dis'];
+    const DAYS   = ['Ahad','Isnin','Selasa','Rabu','Khamis','Jumaat','Sabtu'];
 
-// ── All 72 Group Stage Matches (MYT dates/times) ──────────────────────────────
-const GS = [
-  {id:1, g:'A',h:'Mexico',       a:'South Africa', d:'2026-06-12',t:'03:00',v:'Mexico City'},
-  {id:2, g:'A',h:'South Korea',  a:'Czechia',       d:'2026-06-12',t:'10:00',v:'Zapopan'},
-  {id:3, g:'B',h:'Canada',       a:'Bosnia',        d:'2026-06-13',t:'03:00',v:'Toronto'},
-  {id:4, g:'D',h:'USA',          a:'Paraguay',      d:'2026-06-13',t:'09:00',v:'Los Angeles'},
-  {id:5, g:'B',h:'Qatar',        a:'Switzerland',   d:'2026-06-14',t:'03:00',v:'San Francisco'},
-  {id:6, g:'C',h:'Brazil',       a:'Morocco',       d:'2026-06-14',t:'06:00',v:'New Jersey'},
-  {id:7, g:'C',h:'Haiti',        a:'Scotland',      d:'2026-06-14',t:'09:00',v:'Boston'},
-  {id:8, g:'D',h:'Australia',    a:'Türkiye',       d:'2026-06-14',t:'12:00',v:'Vancouver'},
-  {id:9, g:'E',h:'Germany',      a:'Curaçao',       d:'2026-06-15',t:'01:00',v:'Houston'},
-  {id:10,g:'F',h:'Netherlands',  a:'Japan',         d:'2026-06-15',t:'04:00',v:'Dallas'},
-  {id:11,g:'E',h:'Ivory Coast',  a:'Ecuador',       d:'2026-06-15',t:'07:00',v:'Philadelphia'},
-  {id:12,g:'F',h:'Sweden',       a:'Tunisia',       d:'2026-06-15',t:'10:00',v:'Monterrey'},
-  {id:13,g:'H',h:'Spain',        a:'Cape Verde',    d:'2026-06-16',t:'00:00',v:'Atlanta'},
-  {id:14,g:'G',h:'Belgium',      a:'Egypt',         d:'2026-06-16',t:'03:00',v:'Vancouver'},
-  {id:15,g:'H',h:'Saudi Arabia', a:'Uruguay',       d:'2026-06-16',t:'06:00',v:'Miami'},
-  {id:16,g:'G',h:'Iran',         a:'New Zealand',   d:'2026-06-16',t:'09:00',v:'Los Angeles'},
-  {id:17,g:'I',h:'France',       a:'Senegal',       d:'2026-06-17',t:'03:00',v:'New Jersey'},
-  {id:18,g:'I',h:'Iraq',         a:'Norway',        d:'2026-06-17',t:'06:00',v:'Boston'},
-  {id:19,g:'J',h:'Argentina',    a:'Algeria',       d:'2026-06-17',t:'09:00',v:'Kansas City'},
-  {id:20,g:'J',h:'Austria',      a:'Jordan',        d:'2026-06-17',t:'12:00',v:'San Francisco'},
-  {id:21,g:'K',h:'Portugal',     a:'DR Congo',      d:'2026-06-18',t:'01:00',v:'Houston'},
-  {id:22,g:'L',h:'England',      a:'Croatia',       d:'2026-06-18',t:'04:00',v:'Dallas'},
-  {id:23,g:'L',h:'Ghana',        a:'Panama',        d:'2026-06-18',t:'07:00',v:'Toronto'},
-  {id:24,g:'K',h:'Uzbekistan',   a:'Colombia',      d:'2026-06-18',t:'10:00',v:'Mexico City'},
-  {id:25,g:'A',h:'Czechia',      a:'South Africa',  d:'2026-06-19',t:'00:00',v:'Atlanta'},
-  {id:26,g:'B',h:'Switzerland',  a:'Bosnia',        d:'2026-06-19',t:'03:00',v:'Los Angeles'},
-  {id:27,g:'B',h:'Canada',       a:'Qatar',         d:'2026-06-19',t:'06:00',v:'Vancouver'},
-  {id:28,g:'A',h:'Mexico',       a:'South Korea',   d:'2026-06-19',t:'09:00',v:'Zapopan'},
-  {id:29,g:'D',h:'USA',          a:'Australia',     d:'2026-06-20',t:'03:00',v:'Seattle'},
-  {id:30,g:'C',h:'Scotland',     a:'Morocco',       d:'2026-06-20',t:'06:00',v:'Boston'},
-  {id:31,g:'C',h:'Brazil',       a:'Haiti',         d:'2026-06-20',t:'08:30',v:'Philadelphia'},
-  {id:32,g:'D',h:'Türkiye',      a:'Paraguay',      d:'2026-06-20',t:'11:00',v:'San Francisco'},
-  {id:33,g:'F',h:'Netherlands',  a:'Sweden',        d:'2026-06-21',t:'01:00',v:'Houston'},
-  {id:34,g:'E',h:'Germany',      a:'Ivory Coast',   d:'2026-06-21',t:'04:00',v:'Toronto'},
-  {id:35,g:'E',h:'Ecuador',      a:'Curaçao',       d:'2026-06-21',t:'11:00',v:'Kansas City'},
-  {id:36,g:'F',h:'Tunisia',      a:'Japan',         d:'2026-06-21',t:'12:00',v:'Monterrey'},
-  {id:37,g:'H',h:'Spain',        a:'Saudi Arabia',  d:'2026-06-22',t:'00:00',v:'Atlanta'},
-  {id:38,g:'G',h:'Belgium',      a:'Iran',          d:'2026-06-22',t:'03:00',v:'Los Angeles'},
-  {id:39,g:'H',h:'Uruguay',      a:'Cape Verde',    d:'2026-06-22',t:'06:00',v:'Miami'},
-  {id:40,g:'G',h:'New Zealand',  a:'Egypt',         d:'2026-06-22',t:'09:00',v:'Vancouver'},
-  {id:41,g:'J',h:'Argentina',    a:'Austria',       d:'2026-06-23',t:'01:00',v:'Dallas'},
-  {id:42,g:'I',h:'France',       a:'Iraq',          d:'2026-06-23',t:'05:00',v:'Philadelphia'},
-  {id:43,g:'I',h:'Norway',       a:'Senegal',       d:'2026-06-23',t:'08:00',v:'New Jersey'},
-  {id:44,g:'J',h:'Jordan',       a:'Algeria',       d:'2026-06-23',t:'11:00',v:'San Francisco'},
-  {id:45,g:'K',h:'Portugal',     a:'Uzbekistan',    d:'2026-06-24',t:'01:00',v:'Houston'},
-  {id:46,g:'L',h:'England',      a:'Ghana',         d:'2026-06-24',t:'04:00',v:'Boston'},
-  {id:47,g:'L',h:'Panama',       a:'Croatia',       d:'2026-06-24',t:'07:00',v:'Toronto'},
-  {id:48,g:'K',h:'Colombia',     a:'DR Congo',      d:'2026-06-24',t:'10:00',v:'Zapopan'},
-  {id:49,g:'B',h:'Switzerland',  a:'Canada',        d:'2026-06-25',t:'03:00',v:'Vancouver'},
-  {id:50,g:'B',h:'Bosnia',       a:'Qatar',         d:'2026-06-25',t:'03:00',v:'Seattle'},
-  {id:51,g:'C',h:'Scotland',     a:'Brazil',        d:'2026-06-25',t:'06:00',v:'Miami'},
-  {id:52,g:'C',h:'Morocco',      a:'Haiti',         d:'2026-06-25',t:'06:00',v:'Atlanta'},
-  {id:53,g:'A',h:'Czechia',      a:'Mexico',        d:'2026-06-25',t:'09:00',v:'Mexico City'},
-  {id:54,g:'A',h:'South Africa', a:'South Korea',   d:'2026-06-25',t:'09:00',v:'Monterrey'},
-  {id:55,g:'E',h:'Ecuador',      a:'Germany',       d:'2026-06-26',t:'04:00',v:'New Jersey'},
-  {id:56,g:'E',h:'Curaçao',      a:'Ivory Coast',   d:'2026-06-26',t:'04:00',v:'Philadelphia'},
-  {id:57,g:'F',h:'Japan',        a:'Sweden',        d:'2026-06-26',t:'07:00',v:'Dallas'},
-  {id:58,g:'F',h:'Tunisia',      a:'Netherlands',   d:'2026-06-26',t:'07:00',v:'Kansas City'},
-  {id:59,g:'D',h:'Türkiye',      a:'USA',           d:'2026-06-26',t:'10:00',v:'Los Angeles'},
-  {id:60,g:'D',h:'Paraguay',     a:'Australia',     d:'2026-06-26',t:'10:00',v:'San Francisco'},
-  {id:61,g:'I',h:'Norway',       a:'France',        d:'2026-06-27',t:'03:00',v:'Boston'},
-  {id:62,g:'I',h:'Senegal',      a:'Iraq',          d:'2026-06-27',t:'03:00',v:'Toronto'},
-  {id:63,g:'H',h:'Cape Verde',   a:'Saudi Arabia',  d:'2026-06-27',t:'08:00',v:'Houston'},
-  {id:64,g:'H',h:'Uruguay',      a:'Spain',         d:'2026-06-27',t:'08:00',v:'Zapopan'},
-  {id:65,g:'G',h:'Egypt',        a:'Iran',          d:'2026-06-27',t:'11:00',v:'Seattle'},
-  {id:66,g:'G',h:'New Zealand',  a:'Belgium',       d:'2026-06-27',t:'11:00',v:'Vancouver'},
-  {id:67,g:'L',h:'Panama',       a:'England',       d:'2026-06-28',t:'05:00',v:'New Jersey'},
-  {id:68,g:'L',h:'Croatia',      a:'Ghana',         d:'2026-06-28',t:'05:00',v:'Philadelphia'},
-  {id:69,g:'K',h:'Colombia',     a:'Portugal',      d:'2026-06-28',t:'07:30',v:'Miami'},
-  {id:70,g:'K',h:'DR Congo',     a:'Uzbekistan',    d:'2026-06-28',t:'07:30',v:'Atlanta'},
-  {id:71,g:'J',h:'Algeria',      a:'Austria',       d:'2026-06-28',t:'10:00',v:'Kansas City'},
-  {id:72,g:'J',h:'Jordan',       a:'Argentina',     d:'2026-06-28',t:'10:00',v:'Dallas'},
-];
+    // Data Perlawanan Kumpulan (GS) & Kalah Mati (KO) asal kekal tanpa ubah jadual masa
+    const GS = [
+      {id:1, g:'A',h:'Mexico',       a:'South Africa', d:'2026-06-12',t:'03:00',v:'Mexico City'},
+      {id:2, g:'A',h:'South Korea',  a:'Czechia',       d:'2026-06-12',t:'10:00',v:'Zapopan'},
+      {id:3, g:'B',h:'Canada',       a:'Bosnia',        d:'2026-06-13',t:'03:00',v:'Toronto'},
+      {id:4, g:'D',h:'USA',          a:'Paraguay',      d:'2026-06-13',t:'09:00',v:'Los Angeles'},
+      {id:5, g:'B',h:'Qatar',        a:'Switzerland',   d:'2026-06-14',t:'03:00',v:'San Francisco'},
+      {id:6, g:'C',h:'Brazil',       a:'Morocco',       d:'2026-06-14',t:'06:00',v:'New Jersey'},
+      {id:7, g:'C',h:'Haiti',        a:'Scotland',      d:'2026-06-14',t:'09:00',v:'Boston'},
+      {id:8, g:'D',h:'Australia',    a:'Türkiye',       d:'2026-06-14',t:'12:00',v:'Vancouver'},
+      {id:9, g:'E',h:'Germany',      a:'Curaçao',       d:'2026-06-15',t:'01:00',v:'Houston'},
+      {id:10,g:'F',h:'Netherlands',  a:'Japan',         d:'2026-06-15',t:'04:00',v:'Dallas'},
+      {id:11,g:'E',h:'Ivory Coast',  a:'Ecuador',       d:'2026-06-15',t:'07:00',v:'Philadelphia'},
+      {id:12,g:'F',h:'Sweden',       a:'Tunisia',       d:'2026-06-15',t:'10:00',v:'Monterrey'},
+      {id:13,g:'H',h:'Spain',        a:'Cape Verde',    d:'2026-06-16',t:'00:00',v:'Atlanta'},
+      {id:14,g:'G',h:'Belgium',      a:'Egypt',         d:'2026-06-16',t:'03:00',v:'Vancouver'},
+      {id:15,g:'H',h:'Saudi Arabia', a:'Uruguay',       d:'2026-06-16',t:'06:00',v:'Miami'},
+      {id:16,g:'G',h:'Iran',         a:'New Zealand',   d:'2026-06-16',t:'09:00',v:'Los Angeles'},
+      {id:17,g:'I',h:'France',       a:'Senegal',       d:'2026-06-17',t:'03:00',v:'New Jersey'},
+      {id:18,g:'I',h:'Iraq',         a:'Norway',        d:'2026-06-17',t:'06:00',v:'Boston'},
+      {id:19,g:'J',h:'Argentina',    a:'Algeria',       d:'2026-06-17',t:'09:00',v:'Kansas City'},
+      {id:20,g:'J',h:'Austria',      a:'Jordan',        d:'2026-06-17',t:'12:00',v:'San Francisco'},
+      {id:21,g:'K',h:'Portugal',     a:'DR Congo',      d:'2026-06-18',t:'01:00',v:'Houston'},
+      {id:22,g:'L',h:'England',      a:'Croatia',       d:'2026-06-18',t:'04:00',v:'Dallas'},
+      {id:23,g:'L',h:'Ghana',        a:'Panama',        d:'2026-06-18',t:'07:00',v:'Toronto'},
+      {id:24,g:'K',h:'Uzbekistan',   a:'Colombia',      d:'2026-06-18',t:'10:00',v:'Mexico City'},
+      {id:25,g:'A',h:'Czechia',      a:'South Africa',  d:'2026-06-19',t:'00:00',v:'Atlanta'},
+      {id:26,g:'B',h:'Switzerland',  a:'Bosnia',        d:'2026-06-19',t:'03:00',v:'Los Angeles'},
+      {id:27,g:'B',h:'Canada',       a:'Qatar',         d:'2026-06-19',t:'06:00',v:'Vancouver'},
+      {id:28,g:'A',h:'Mexico',       a:'South Korea',   d:'2026-06-19',t:'09:00',v:'Zapopan'},
+      {id:29,g:'D',h:'USA',          a:'Australia',     d:'2026-06-20',t:'03:00',v:'Seattle'},
+      {id:30,g:'C',h:'Scotland',     a:'Morocco',       d:'2026-06-20',t:'06:00',v:'Boston'},
+      {id:31,g:'C',h:'Brazil',       a:'Haiti',         d:'2026-06-20',t:'08:30',v:'Philadelphia'},
+      {id:32,g:'D',h:'Türkiye',      a:'Paraguay',      d:'2026-06-20',t:'11:00',v:'San Francisco'},
+      {id:33,g:'F',h:'Netherlands',  a:'Sweden',        d:'2026-06-21',t:'01:00',v:'Houston'},
+      {id:34,g:'E',h:'Germany',      a:'Ivory Coast',   d:'2026-06-21',t:'04:00',v:'Toronto'},
+      {id:35,g:'E',h:'Ecuador',      a:'Curaçao',       d:'2026-06-21',t:'11:00',v:'Kansas City'},
+      {id:36,g:'F',h:'Tunisia',      a:'Japan',         d:'2026-06-21',t:'12:00',v:'Monterrey'},
+      {id:37,g:'H',h:'Spain',        a:'Saudi Arabia',  d:'2026-06-22',t:'00:00',v:'Atlanta'},
+      {id:38,g:'G',h:'Belgium',      a:'Iran',          d:'2026-06-22',t:'03:00',v:'Los Angeles'},
+      {id:39,g:'H',h:'Uruguay',      a:'Cape Verde',    d:'2026-06-22',t:'06:00',v:'Miami'},
+      {id:40,g:'G',h:'New Zealand',  a:'Egypt',         d:'2026-06-22',t:'09:00',v:'Vancouver'},
+      {id:41,g:'J',h:'Argentina',    a:'Austria',       d:'2026-06-23',t:'01:00',v:'Dallas'},
+      {id:42,g:'I',h:'France',       a:'Iraq',          d:'2026-06-23',t:'05:00',v:'Philadelphia'},
+      {id:43,g:'I',h:'Norway',       a:'Senegal',       d:'2026-06-23',t:'08:00',v:'New Jersey'},
+      {id:44,g:'J',h:'Jordan',       a:'Algeria',       d:'2026-06-23',t:'11:00',v:'San Francisco'},
+      {id:45,g:'K',h:'Portugal',     a:'Uzbekistan',    d:'2026-06-24',t:'01:00',v:'Houston'},
+      {id:46,g:'L',h:'England',      a:'Ghana',         d:'2026-06-24',t:'04:00',v:'Boston'},
+      {id:47,g:'L',h:'Panama',       a:'Croatia',       d:'2026-06-24',t:'07:00',v:'Toronto'},
+      {id:48,g:'K',h:'Colombia',     a:'DR Congo',      d:'2026-06-24',t:'10:00',v:'Zapopan'},
+      {id:49,g:'B',h:'Switzerland',  a:'Canada',        d:'2026-06-25',t:'03:00',v:'Vancouver'},
+      {id:50,g:'B',h:'Bosnia',       a:'Qatar',         d:'2026-06-25',t:'03:00',v:'Seattle'},
+      {id:51,g:'C',h:'Scotland',     a:'Brazil',        d:'2026-06-25',t:'06:00',v:'Miami'},
+      {id:52,g:'C',h:'Morocco',      a:'Haiti',         d:'2026-06-25',t:'06:00',v:'Atlanta'},
+      {id:53,g:'A',h:'Czechia',      a:'Mexico',        d:'2026-06-25',t:'09:00',v:'Mexico City'},
+      {id:54,g:'A',h:'South Africa', a:'South Korea',   d:'2026-06-25',t:'09:00',v:'Monterrey'},
+      {id:55,g:'E',h:'Ecuador',      a:'Germany',       d:'2026-06-26',t:'04:00',v:'New Jersey'},
+      {id:56,g:'E',h:'Curaçao',      a:'Ivory Coast',   d:'2026-06-26',t:'04:00',v:'Philadelphia'},
+      {id:57,g:'F',h:'Japan',        a:'Sweden',        d:'2026-06-26',t:'07:00',v:'Dallas'},
+      {id:58,g:'F',h:'Tunisia',      a:'Netherlands',   d:'2026-06-26',t:'07:00',v:'Kansas City'},
+      {id:59,g:'D',h:'Türkiye',      a:'USA',           d:'2026-06-26',t:'10:00',v:'Los Angeles'},
+      {id:60,g:'D',h:'Paraguay',     a:'Australia',     d:'2026-06-26',t:'10:00',v:'San Francisco'},
+      {id:61,g:'I',h:'Norway',       a:'France',        d:'2026-06-27',t:'03:00',v:'Boston'},
+      {id:62,g:'I',h:'Senegal',      a:'Iraq',          d:'2026-06-27',t:'03:00',v:'Toronto'},
+      {id:63,g:'H',h:'Cape Verde',   a:'Saudi Arabia',  d:'2026-06-27',t:'08:00',v:'Houston'},
+      {id:64,g:'H',h:'Uruguay',      a:'Spain',         d:'2026-06-27',t:'08:00',v:'Zapopan'},
+      {id:65,g:'G',h:'Egypt',        a:'Iran',          d:'2026-06-27',t:'11:00',v:'Seattle'},
+      {id:66,g:'G',h:'New Zealand',  a:'Belgium',       d:'2026-06-27',t:'11:00',v:'Vancouver'},
+      {id:67,g:'L',h:'Panama',       a:'England',       d:'2026-06-28',t:'05:00',v:'New Jersey'},
+      {id:68,g:'L',h:'Croatia',      a:'Ghana',         d:'2026-06-28',t:'05:00',v:'Philadelphia'},
+      {id:69,g:'K',h:'Colombia',     a:'Portugal',      d:'2026-06-28',t:'07:30',v:'Miami'},
+      {id:70,g:'K',h:'DR Congo',     a:'Uzbekistan',    d:'2026-06-28',t:'07:30',v:'Atlanta'},
+      {id:71,g:'J',h:'Algeria',      a:'Austria',       d:'2026-06-28',t:'10:00',v:'Kansas City'},
+      {id:72,g:'J',h:'Jordan',       a:'Argentina',     d:'2026-06-28',t:'10:00',v:'Dallas'},
+    ];
 
-// ── All 32 Knockout Matches (MYT dates/times) ─────────────────────────────────
-const KO = [
-  {id:73, phase:'R32',n:1,  d:'2026-06-29',t:'03:00',v:'Los Angeles'},
-  {id:74, phase:'R32',n:2,  d:'2026-06-30',t:'03:00',v:'Houston'},
-  {id:75, phase:'R32',n:3,  d:'2026-06-30',t:'04:30',v:'Boston'},
-  {id:76, phase:'R32',n:4,  d:'2026-06-30',t:'09:00',v:'Monterrey'},
-  {id:77, phase:'R32',n:5,  d:'2026-07-01',t:'01:00',v:'Dallas'},
-  {id:78, phase:'R32',n:6,  d:'2026-07-01',t:'05:00',v:'New Jersey'},
-  {id:79, phase:'R32',n:7,  d:'2026-07-01',t:'09:00',v:'Mexico City'},
-  {id:80, phase:'R32',n:8,  d:'2026-07-02',t:'00:00',v:'Atlanta'},
-  {id:81, phase:'R32',n:9,  d:'2026-07-02',t:'04:00',v:'Seattle'},
-  {id:82, phase:'R32',n:10, d:'2026-07-02',t:'08:00',v:'San Francisco'},
-  {id:83, phase:'R32',n:11, d:'2026-07-03',t:'03:00',v:'Los Angeles'},
-  {id:84, phase:'R32',n:12, d:'2026-07-03',t:'07:00',v:'Toronto'},
-  {id:85, phase:'R32',n:13, d:'2026-07-03',t:'11:00',v:'Vancouver'},
-  {id:86, phase:'R32',n:14, d:'2026-07-04',t:'02:00',v:'Dallas'},
-  {id:87, phase:'R32',n:15, d:'2026-07-04',t:'06:00',v:'Miami'},
-  {id:88, phase:'R32',n:16, d:'2026-07-04',t:'09:30',v:'Kansas City'},
-  {id:89, phase:'R16',n:1,  d:'2026-07-05',t:'01:00',v:'Houston'},
-  {id:90, phase:'R16',n:2,  d:'2026-07-05',t:'05:00',v:'Philadelphia'},
-  {id:91, phase:'R16',n:3,  d:'2026-07-06',t:'04:00',v:'New Jersey'},
-  {id:92, phase:'R16',n:4,  d:'2026-07-06',t:'08:00',v:'Mexico City'},
-  {id:93, phase:'R16',n:5,  d:'2026-07-07',t:'03:00',v:'Dallas'},
-  {id:94, phase:'R16',n:6,  d:'2026-07-07',t:'08:00',v:'Seattle'},
-  {id:95, phase:'R16',n:7,  d:'2026-07-08',t:'00:00',v:'Atlanta'},
-  {id:96, phase:'R16',n:8,  d:'2026-07-08',t:'04:00',v:'Vancouver'},
-  {id:97, phase:'QF', n:1,  d:'2026-07-10',t:'04:00',v:'Boston'},
-  {id:98, phase:'QF', n:2,  d:'2026-07-11',t:'03:00',v:'Los Angeles'},
-  {id:99, phase:'QF', n:3,  d:'2026-07-12',t:'04:00',v:'Miami'},
-  {id:100,phase:'QF', n:4,  d:'2026-07-12',t:'09:00',v:'Kansas City'},
-  {id:101,phase:'SF', n:1,  d:'2026-07-15',t:'03:00',v:'Dallas'},
-  {id:102,phase:'SF', n:2,  d:'2026-07-16',t:'03:00',v:'Atlanta'},
-  {id:103,phase:'BRONZE',n:1,d:'2026-07-19',t:'05:00',v:'Miami'},
-  {id:104,phase:'FINAL', n:1,d:'2026-07-20',t:'03:00',v:'New York / New Jersey'},
-];
+    const KO = [
+      {id:73, phase:'R32',n:1,  d:'2026-06-29',t:'03:00',v:'Los Angeles'},
+      {id:74, phase:'R32',n:2,  d:'2026-06-30',t:'03:00',v:'Houston'},
+      {id:75, phase:'R32',n:3,  d:'2026-06-30',t:'04:30',v:'Boston'},
+      {id:76, phase:'R32',n:4,  d:'2026-06-30',t:'09:00',v:'Monterrey'},
+      {id:77, phase:'R32',n:5,  d:'2026-07-01',t:'01:00',v:'Dallas'},
+      {id:78, phase:'R32',n:6,  d:'2026-07-01',t:'05:00',v:'New Jersey'},
+      {id:79, phase:'R32',n:7,  d:'2026-07-01',t:'09:00',v:'Mexico City'},
+      {id:80, phase:'R32',n:8,  d:'2026-07-02',t:'00:00',v:'Atlanta'},
+      {id:81, phase:'R32',n:9,  d:'2026-07-02',t:'04:00',v:'Seattle'},
+      {id:82, phase:'R32',n:10, d:'2026-07-02',t:'08:00',v:'San Francisco'},
+      {id:83, phase:'R32',n:11, d:'2026-07-03',t:'03:00',v:'Los Angeles'},
+      {id:84, phase:'R32',n:12, d:'2026-07-03',t:'07:00',v:'Toronto'},
+      {id:85, phase:'R32',n:13, d:'2026-07-03',t:'11:00',v:'Vancouver'},
+      {id:86, phase:'R32',n:14, d:'2026-07-04',t:'02:00',v:'Dallas'},
+      {id:87, phase:'R32',n:15, d:'2026-07-04',t:'06:00',v:'Miami'},
+      {id:88, phase:'R32',n:16, d:'2026-07-04',t:'09:30',v:'Kansas City'},
+      {id:89, phase:'R16',n:1,  d:'2026-07-05',t:'01:00',v:'Houston'},
+      {id:90, phase:'R16',n:2,  d:'2026-07-05',t:'05:00',v:'Philadelphia'},
+      {id:91, phase:'R16',n:3,  d:'2026-07-06',t:'04:00',v:'New Jersey'},
+      {id:92, phase:'R16',n:4,  d:'2026-07-06',t:'08:00',v:'Mexico City'},
+      {id:93, phase:'R16',n:5,  d:'2026-07-07',t:'03:00',v:'Dallas'},
+      {id:94, phase:'R16',n:6,  d:'2026-07-07',t:'08:00',v:'Seattle'},
+      {id:95, phase:'R16',n:7,  d:'2026-07-08',t:'00:00',v:'Atlanta'},
+      {id:96, phase:'R16',n:8,  d:'2026-07-08',t:'04:00',v:'Vancouver'},
+      {id:97, phase:'QF', n:1,  d:'2026-07-10',t:'04:00',v:'Boston'},
+      {id:98, phase:'QF', n:2,  d:'2026-07-11',t:'03:00',v:'Los Angeles'},
+      {id:99, phase:'QF', n:3,  d:'2026-07-12',t:'04:00',v:'Miami'},
+      {id:100,phase:'QF', n:4,  d:'2026-07-12',t:'09:00',v:'Kansas City'},
+      {id:101,phase:'SF', n:1,  d:'2026-07-15',t:'03:00',v:'Dallas'},
+      {id:102,phase:'SF', n:2,  d:'2026-07-16',t:'03:00',v:'Atlanta'},
+      {id:103,phase:'BRONZE',n:1,d:'2026-07-19',t:'05:00',v:'Miami'},
+      {id:104,phase:'FINAL', n:1,d:'2026-07-20',t:'03:00',v:'New York / New Jersey'},
+    ];
 
-// ── Card Components ───────────────────────────────────────────────────────────
-function GroupCard({ m, isHov, onEnter, onLeave }) {
-  const c    = GC[m.g];
-  const mood = getMood(m.t);
-  const isToday = m.d === TODAY;
-  return (
-    <div
-      className="mcard"
-      onMouseEnter={onEnter}
-      onMouseLeave={onLeave}
-      style={{
-        background: 'rgba(7,16,38,0.96)',
-        border: `1px solid ${isHov ? c + 'AA' : c + '30'}`,
-        borderTop: `3px solid ${c}`,
-        borderRadius: 12,
-        padding: '14px 12px',
-        position: 'relative',
-        boxShadow: isHov ? `0 10px 32px ${c}20, 0 0 0 1px ${c}25` : 'none',
-        transition: 'border-color .2s, box-shadow .2s',
-        cursor: 'default',
-      }}
-    >
-      {/* Header row */}
-      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:10 }}>
-        <span style={{
-          background: c + '18', border: `1px solid ${c}55`, color: c,
-          borderRadius: 20, padding: '2px 8px', fontSize: 9, fontWeight: 800, letterSpacing: 1.5
-        }}>KUMP {m.g}</span>
-        <span style={{ fontSize:13 }}>{mood.icon}</span>
-      </div>
-
-      {/* Teams + Time */}
-      <div style={{ display:'flex', alignItems:'center', gap:6 }}>
-        {/* Home */}
-        <div style={{ flex:1, textAlign:'center' }}>
-          <div style={{ fontSize:28, lineHeight:1 }}>{FLAGS[m.h] || '🏳'}</div>
-          <div style={{ fontSize:10, fontWeight:700, color:'#C4D4E8', marginTop:4, lineHeight:1.3 }}>{m.h}</div>
-        </div>
-        {/* Center */}
-        <div style={{ textAlign:'center', minWidth:62 }}>
-          <div style={{
-            fontSize:18, fontWeight:900, color:'#00E8FF',
-            textShadow:'0 0 14px #00E8FFBB',
-            fontFamily:'"Courier New",monospace', letterSpacing:2, lineHeight:1
-          }}>{m.t}</div>
-          <div style={{ fontSize:7, color:'#1E4870', fontWeight:800, letterSpacing:2.5, marginTop:1 }}>MYT</div>
-          <div style={{ fontSize:8, color:'#122040', fontWeight:700, letterSpacing:1.5, marginTop:4 }}>VS</div>
-        </div>
-        {/* Away */}
-        <div style={{ flex:1, textAlign:'center' }}>
-          <div style={{ fontSize:28, lineHeight:1 }}>{FLAGS[m.a] || '🏳'}</div>
-          <div style={{ fontSize:10, fontWeight:700, color:'#C4D4E8', marginTop:4, lineHeight:1.3 }}>{m.a}</div>
-        </div>
-      </div>
-
-      {/* Venue */}
-      <div style={{
-        marginTop:10, paddingTop:7,
-        borderTop:'1px solid rgba(12,36,80,0.6)',
-        fontSize:9, color:'#1E3855', textAlign:'center', letterSpacing:.3
-      }}>📍 {m.v}</div>
-
-      {isToday && (
-        <div style={{
-          position:'absolute', top:0, right:10,
-          background:'#DC2626', color:'#fff',
-          fontSize:7, fontWeight:800, padding:'2px 7px',
-          borderBottomLeftRadius:5, borderBottomRightRadius:5, letterSpacing:1.5
-        }}>HARI INI</div>
-      )}
-    </div>
-  );
-}
-
-function KoCard({ m, isHov, onEnter, onLeave }) {
-  const isFinal  = m.phase === 'FINAL';
-  const isBronze = m.phase === 'BRONZE';
-  const c = isFinal ? '#F5C518' : isBronze ? '#CD7F32' : '#00C8FF';
-  const mood = getMood(m.t);
-  return (
-    <div
-      className="mcard"
-      onMouseEnter={onEnter}
-      onMouseLeave={onLeave}
-      style={{
-        background: isFinal ? 'rgba(14,11,3,0.98)' : 'rgba(7,16,38,0.96)',
-        border: `1px solid ${isHov ? c + 'AA' : c + '30'}`,
-        borderTop: `3px solid ${c}`,
-        borderRadius: 12, padding: '14px 12px', position: 'relative',
-        boxShadow: isFinal ? `0 4px 40px ${c}30` : isHov ? `0 10px 32px ${c}20` : 'none',
-        transition: 'border-color .2s, box-shadow .2s', cursor: 'default'
-      }}
-    >
-      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:10 }}>
-        <span style={{
-          background: c + '18', border: `1px solid ${c}55`, color: c,
-          borderRadius:20, padding:'2px 9px', fontSize:9, fontWeight:800, letterSpacing:1
-        }}>{PHASE_LABELS[m.phase]} #{m.n}</span>
-        <span style={{ fontSize:13 }}>{mood.icon}</span>
-      </div>
-
-      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-around', padding:'8px 0' }}>
-        <div style={{ textAlign:'center', flex:1 }}>
-          <div style={{ fontSize:26, color:'#0A1626', lineHeight:1 }}>⚽</div>
-          <div style={{ fontSize:9, color:'#152235', fontStyle:'italic', marginTop:4 }}>Belum Pasti</div>
-        </div>
-        <div style={{ textAlign:'center', padding:'0 4px' }}>
-          <div style={{
-            fontSize:20, fontWeight:900, color:c,
-            textShadow:`0 0 14px ${c}BB`,
-            fontFamily:'"Courier New",monospace', letterSpacing:2, lineHeight:1
-          }}>{m.t}</div>
-          <div style={{ fontSize:7, color:'#1E4870', fontWeight:800, letterSpacing:2.5, marginTop:1 }}>MYT</div>
-        </div>
-        <div style={{ textAlign:'center', flex:1 }}>
-          <div style={{ fontSize:26, color:'#0A1626', lineHeight:1 }}>⚽</div>
-          <div style={{ fontSize:9, color:'#152235', fontStyle:'italic', marginTop:4 }}>Belum Pasti</div>
-        </div>
-      </div>
-
-      <div style={{
-        marginTop:10, paddingTop:7,
-        borderTop:'1px solid rgba(12,36,80,0.6)',
-        fontSize:9, color:'#1E3855', textAlign:'center'
-      }}>📍 {m.v}</div>
-    </div>
-  );
-}
-
-// ── Main App ──────────────────────────────────────────────────────────────────
-function App() {
-  const [tab, setTab]     = useState('GS');
-  const [grp, setGrp]     = useState('ALL');
-  const [q,   setQ]       = useState('');
-  const [hovId, setHovId] = useState(null);
-
-  const TABS = [
-    {id:'GS',    label:'⚽ Kumpulan'},
-    {id:'R32',   label:'P.32'},
-    {id:'R16',   label:'P.16'},
-    {id:'QF',    label:'S/Akhir'},
-    {id:'SF',    label:'S.Akhir'},
-    {id:'BRONZE',label:'3rd 🥉'},
-    {id:'FINAL', label:'FINAL 🏆'},
-  ];
-
-  const matches = useMemo(() => {
-    let arr = tab === 'GS' ? GS : KO.filter(m => m.phase === tab);
-    if (tab === 'GS' && grp !== 'ALL') arr = arr.filter(m => m.g === grp);
-    if (q.trim()) {
-      const lq = q.toLowerCase();
-      arr = arr.filter(m =>
-        (m.h||'').toLowerCase().includes(lq) ||
-        (m.a||'').toLowerCase().includes(lq) ||
-        (m.v||'').toLowerCase().includes(lq)
-      );
+    function fmtDate(s) {
+      const d = new Date(s + 'T12:00:00');
+      return `${DAYS[d.getDay()]}, ${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
     }
-    return arr;
-  }, [tab, grp, q]);
 
-  const byDate = useMemo(() => {
-    const map = {};
-    for (const m of matches) {
-      if (!map[m.d]) map[m.d] = [];
-      map[m.d].push(m);
+    function getMood(t) {
+      const h = parseInt(t);
+      if (h < 6)  return { icon:'🌙', label:'Tengah Malam' };
+      if (h < 12) return { icon:'🌅', label:'Awal Pagi' };
+      if (h < 17) return { icon:'☀️', label:'Tengahari' };
+      return { icon:'🌆', label:'Malam' };
     }
-    return Object.entries(map).sort(([a],[b]) => (a < b ? -1 : 1));
-  }, [matches]);
 
-  const isGS = tab === 'GS';
+    // Mengira status perlawanan berdasarkan masa sebenar sistem
+    function getMatchStatus(dateStr, timeStr) {
+      const matchTime = new Date(`${dateStr}T${timeStr}:00`);
+      const now = new Date();
+      const diffMs = now - matchTime;
+      const diffHours = diffMs / (1000 * 60 * 60);
 
-  return (
-    <div style={{
-      background:'#030C1E',
-      minHeight:'100vh',
-      color:'#E8F0FF',
-      fontFamily:'"Inter","Segoe UI",system-ui,sans-serif',
-    }}>
-      <style>{`
-        @keyframes blink {0%,100%{opacity:1}50%{opacity:0.2}}
-        @keyframes shimmer {0%{opacity:.7}50%{opacity:1}100%{opacity:.7}}
-        .mcard {transition:transform .15s ease, box-shadow .2s ease;}
-        .mcard:hover {transform:translateY(-3px);}
-        * {box-sizing:border-box;}
-        ::-webkit-scrollbar {height:4px;width:4px;}
-        ::-webkit-scrollbar-track {background:rgba(0,0,0,0.1);}
-        ::-webkit-scrollbar-thumb {background:rgba(30,80,160,0.45);border-radius:4px;}
-        input::placeholder {color:#1A3050;}
-        input:focus {outline:none;border-color:rgba(0,232,255,0.5)!important;}
-        button:focus {outline:none;}
-      `}</style>
+      if (diffHours >= 0 && diffHours <= 2) {
+        return { code: 'LIVE', label: 'LIVE 🔥', class: 'bg-red-500 text-white animate-pulse shadow-lg shadow-red-500/50' };
+      } else if (diffHours > 2) {
+        return { code: 'TAMAT', label: 'TAMAT', class: 'bg-slate-800 text-slate-400 border border-slate-700' };
+      } else {
+        return { code: 'AKAN_DATANG', label: 'AKAN DATANG', class: 'bg-cyan-950 text-cyan-400 border border-cyan-500/30' };
+      }
+    }
 
-      {/* ── HERO ────────────────────────────────────────── */}
-      <div style={{
-        background:'linear-gradient(180deg, #0B1D44 0%, #040C22 100%)',
-        borderBottom:'1px solid rgba(245,197,24,0.18)',
-        padding:'26px 20px 20px',
-        textAlign:'center',
-        position:'relative',
-        overflow:'hidden',
-      }}>
-        {/* Floodlight glow */}
-        <div style={{
-          position:'absolute',top:-60,left:'50%',transform:'translateX(-50%)',
-          width:'70%',height:220,
-          background:'radial-gradient(ellipse, rgba(0,180,255,0.07) 0%, transparent 70%)',
-          pointerEvents:'none'
-        }}/>
-        {/* Trophy glow */}
-        <div style={{
-          position:'absolute',bottom:-20,right:-20,
-          fontSize:120,opacity:0.04,transform:'rotate(-15deg)',
-          lineHeight:1,userSelect:'none'
-        }}>🏆</div>
-
-        {/* Brand */}
-        <div style={{
-          fontSize:10,letterSpacing:4.5,color:'#F5C518',
-          marginBottom:10,fontWeight:800,animation:'shimmer 3s ease infinite'
-        }}>⚽ FIFA WORLD CUP 2026™ ⚽</div>
-
-        <div style={{
-          fontSize:'clamp(28px,6.5vw,56px)',
-          fontWeight:900,color:'#FFFFFF',
-          letterSpacing:-1.5,lineHeight:.95,
-          textShadow:'0 2px 20px rgba(0,0,0,0.6)'
-        }}>JADUAL RASMI</div>
-
-        <div style={{
-          fontSize:'clamp(13px,3vw,20px)',
-          fontWeight:700,color:'#00E8FF',
-          textShadow:'0 0 24px #00E8FF60',
-          letterSpacing:1.5,marginTop:6
-        }}>WAKTU MALAYSIA · MYT (UTC+8)</div>
-
-        <div style={{
-          display:'flex',justifyContent:'center',flexWrap:'wrap',
-          gap:'4px 18px',marginTop:14,fontSize:11,color:'#2A4568'
-        }}>
-          <span>🇲🇽 Mexico · 🇨🇦 Kanada · 🇺🇸 USA</span>
-          <span>·</span>
-          <span>104 Perlawanan · 48 Pasukan</span>
-          <span>·</span>
-          <span>11 Jun – 20 Jul 2026</span>
-        </div>
-
-        {/* Legend */}
-        <div style={{
-          display:'inline-flex',flexWrap:'wrap',justifyContent:'center',
-          gap:'4px 14px',marginTop:12,
-          background:'rgba(0,0,0,0.2)',borderRadius:20,
-          padding:'6px 14px',fontSize:10,color:'#1E3C5A'
-        }}>
-          {[['🌙','00–06 Tengah Malam'],['🌅','06–12 Awal Pagi'],
-            ['☀️','12–17 Tengahari'],['🌆','17–24 Malam']].map(([i,l])=>(
-            <span key={l}>{i} {l}</span>
-          ))}
-        </div>
-      </div>
-
-      {/* ── PHASE TABS ──────────────────────────────────── */}
-      <div style={{
-        background:'rgba(3,8,20,0.95)',
-        borderBottom:'1px solid rgba(15,40,90,0.4)',
-        padding:'10px 14px',
-        display:'flex',gap:6,
-        overflowX:'auto',WebkitOverflowScrolling:'touch',
-      }}>
-        {TABS.map(t => (
-          <button key={t.id}
-            onClick={() => { setTab(t.id); setGrp('ALL'); setQ(''); }}
-            style={{
-              background: tab===t.id ? '#F5C518' : 'rgba(10,24,56,0.85)',
-              color:       tab===t.id ? '#0A0800' : '#3A5878',
-              border:      tab===t.id ? 'none' : '1px solid rgba(20,50,100,0.35)',
-              borderRadius:20, padding:'7px 14px', fontSize:11, fontWeight:800,
-              cursor:'pointer', whiteSpace:'nowrap', letterSpacing:.3,
-              transition:'all .15s',
-              boxShadow: tab===t.id ? '0 2px 12px rgba(245,197,24,0.3)' : 'none',
-            }}
-          >{t.label}</button>
-        ))}
-      </div>
-
-      {/* ── GROUP FILTER ────────────────────────────────── */}
-      {isGS && (
-        <div style={{
-          background:'rgba(3,8,20,0.9)',
-          padding:'8px 14px',display:'flex',gap:5,
-          overflowX:'auto',WebkitOverflowScrolling:'touch',
-          borderBottom:'1px solid rgba(12,32,72,0.35)'
-        }}>
-          {/* "Semua" chip */}
-          <button onClick={() => setGrp('ALL')} style={{
-            background: grp==='ALL' ? 'rgba(245,197,24,0.12)' : 'transparent',
-            color:       grp==='ALL' ? '#F5C518' : '#2A4060',
-            border:     `1px solid ${grp==='ALL' ? 'rgba(245,197,24,0.4)' : 'rgba(18,45,90,0.35)'}`,
-            borderRadius:20,padding:'5px 12px',fontSize:10,fontWeight:800,
-            cursor:'pointer',whiteSpace:'nowrap',letterSpacing:1
-          }}>SEMUA</button>
-
-          {'ABCDEFGHIJKL'.split('').map(g => (
-            <button key={g} onClick={() => setGrp(g)} style={{
-              background: grp===g ? GC[g]+'20' : 'transparent',
-              color:       grp===g ? GC[g] : '#2A4060',
-              border:     `1px solid ${grp===g ? GC[g]+'66' : 'rgba(18,45,90,0.35)'}`,
-              borderRadius:20,padding:'5px 10px',fontSize:10,fontWeight:800,
-              cursor:'pointer',whiteSpace:'nowrap',
-            }}>{g}</button>
-          ))}
-        </div>
-      )}
-
-      {/* Group info strip */}
-      {isGS && grp !== 'ALL' && GROUPS[grp] && (
-        <div style={{
-          margin:'8px 14px 2px',
-          background: GC[grp]+'0C',
-          border:`1px solid ${GC[grp]}30`,
-          borderRadius:8, padding:'9px 14px',
-          display:'flex',flexWrap:'wrap',gap:'4px 16px',alignItems:'center'
-        }}>
-          <span style={{ color:GC[grp], fontWeight:800, fontSize:11, letterSpacing:1.5 }}>
-            KUMPULAN {grp}
-          </span>
-          {GROUPS[grp].map(t => (
-            <span key={t} style={{ fontSize:12, color:'#3A5878' }}>
-              {FLAGS[t]} {t}
-            </span>
-          ))}
-        </div>
-      )}
-
-      {/* ── SEARCH ──────────────────────────────────────── */}
-      <div style={{ padding:'8px 14px 6px' }}>
-        <input
-          type="text"
-          placeholder="🔍  Cari pasukan atau bandar..."
-          value={q}
-          onChange={e => setQ(e.target.value)}
-          style={{
-            width:'100%',
-            background:'rgba(6,14,34,0.85)',
-            border:'1px solid rgba(16,40,90,0.45)',
-            borderRadius:8,padding:'9px 14px',
-            color:'#C4D4E8',fontSize:13,
-            transition:'border-color .2s'
-          }}
-        />
-      </div>
-
-      {/* ── MATCH LIST ──────────────────────────────────── */}
-      <div style={{ padding:'4px 14px 52px' }}>
-        {byDate.length === 0 && (
-          <div style={{ textAlign:'center', color:'#1A3048', padding:56, fontSize:14 }}>
-            Tiada perlawanan dijumpai.
-          </div>
-        )}
-
-        {byDate.map(([date, ms]) => (
-          <div key={date} style={{ marginBottom:22 }}>
-            {/* Date header */}
-            <div style={{ display:'flex', alignItems:'center', gap:10, margin:'10px 0 12px' }}>
-              <div style={{ flex:1, height:1, background:'linear-gradient(to right,rgba(16,44,100,0.5),transparent)' }}/>
-              <div style={{
-                background: date===TODAY ? '#B91C1C' : 'rgba(8,20,48,0.9)',
-                border:     date===TODAY ? 'none' : '1px solid rgba(16,44,100,0.35)',
-                borderRadius:20, padding:'5px 14px',
-                fontSize:11, fontWeight:700,
-                color: date===TODAY ? '#fff' : '#3A5878',
-                whiteSpace:'nowrap',
-                display:'flex',alignItems:'center',gap:6,
-                boxShadow: date===TODAY ? '0 0 16px rgba(185,28,28,0.4)' : 'none'
-              }}>
-                {date===TODAY && <span style={{
-                  width:5,height:5,borderRadius:'50%',
-                  background:'#FCA5A5',display:'inline-block',
-                  animation:'blink 1.2s ease infinite'
-                }}/>}
-                {fmtDate(date)}
-                {date===TODAY && ' · HARI INI'}
+    // ── KUMPULAN CARD (GROUP STAGE) ───────────────────────────────────────────
+    function GroupCard({ m, isFav, toggleFav }) {
+      const c = GC[m.g] || '#00E8FF';
+      const mood = getMood(m.t);
+      const status = getMatchStatus(m.d, m.t);
+      
+      return (
+        <div 
+          className="glass rounded-xl p-4 border transition-all duration-300 hover:-translate-y-1 relative group flex flex-col justify-between"
+          style={{ borderColor: `${c}25`, borderTop: `3px solid ${c}` }}
+        >
+          <div>
+            <div class="flex justify-between items-center mb-3">
+              <span class="text-[10px] font-extrabold tracking-wider px-2 py-0.5 rounded-full" style={{ background: `${c}15`, border: `1px solid ${c}40`, color: c }}>
+                KUMPULAN {m.g}
+              </span>
+              <div class="flex items-center gap-2">
+                <span class="text-xs text-slate-400">{mood.icon}</span>
+                <button 
+                  onClick={(e) => { e.stopPropagation(); toggleFav(m.h, m.a); }}
+                  class="text-sm focus:outline-none transition-transform active:scale-75"
+                >
+                  {isFav ? '⭐' : '☆'}
+                </button>
               </div>
-              <div style={{ flex:1, height:1, background:'linear-gradient(to left,rgba(16,44,100,0.5),transparent)' }}/>
             </div>
 
-            {/* Cards grid */}
-            <div style={{
-              display:'grid',
-              gridTemplateColumns:'repeat(auto-fill,minmax(240px,1fr))',
-              gap:10
-            }}>
-              {ms.map(m => isGS ? (
-                <GroupCard
-                  key={m.id} m={m}
-                  isHov={hovId===m.id}
-                  onEnter={() => setHovId(m.id)}
-                  onLeave={() => setHovId(null)}
-                />
-              ) : (
-                <KoCard
-                  key={m.id} m={m}
-                  isHov={hovId===m.id}
-                  onEnter={() => setHovId(m.id)}
-                  onLeave={() => setHovId(null)}
-                />
+            <div class="flex items-center justify-between gap-2 my-2">
+              {/* Home Team */}
+              <div class="flex-1 flex flex-col items-center text-center">
+                <span class="text-3xl filter drop-shadow-md transform group-hover:scale-110 transition-transform duration-300">{FLAGS[m.h] || '🏳️'}</span>
+                <span class="text-xs font-bold text-slate-200 mt-2 line-clamp-1">{m.h}</span>
+              </div>
+
+              {/* Center Info */}
+              <div class="text-center px-2 min-w-[75px]">
+                <div class="mono text-lg font-black text-cyan-400 tracking-wider drop-shadow-[0_0_8px_rgba(6,182,212,0.5)]">{m.t}</div>
+                <div class="text-[8px] font-extrabold tracking-widest text-slate-500 mt-0.5">MYT</div>
+                <div class="text-[9px] font-black text-slate-600 mt-1 tracking-widest">VS</div>
+              </div>
+
+              {/* Away Team */}
+              <div class="flex-1 flex flex-col items-center text-center">
+                <span class="text-3xl filter drop-shadow-md transform group-hover:scale-110 transition-transform duration-300">{FLAGS[m.a] || '🏳️'}</span>
+                <span class="text-xs font-bold text-slate-200 mt-2 line-clamp-1">{m.a}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-4 pt-3 border-t border-slate-800/60 flex items-center justify-between text-[10px]">
+            <span class="text-slate-500 truncate max-w-[120px]">📍 {m.v}</span>
+            <span class={`px-2 py-0.5 rounded font-black tracking-wider text-[9px] ${status.class}`}>{status.label}</span>
+          </div>
+        </div>
+      );
+    }
+
+    // ── KALAH MATI CARD (KNOCKOUT STAGE) ──────────────────────────────────────
+    function KoCard({ m }) {
+      const isFinal = m.phase === 'FINAL';
+      const isBronze = m.phase === 'BRONZE';
+      const c = isFinal ? '#F5C518' : isBronze ? '#CD7F32' : '#00E8FF';
+      const mood = getMood(m.t);
+      const status = getMatchStatus(m.d, m.t);
+
+      return (
+        <div 
+          className="glass rounded-xl p-4 border transition-all duration-300 hover:-translate-y-1 relative flex flex-col justify-between"
+          style={{ borderColor: `${c}25`, borderTop: `3px solid ${c}`, background: isFinal ? 'linear-gradient(180deg, rgba(245,197,24,0.05) 0%, rgba(15,23,42,0.8) 100%)' : '' }}
+        >
+          <div>
+            <div class="flex justify-between items-center mb-3">
+              <span class="text-[10px] font-extrabold tracking-wider px-2 py-0.5 rounded-full" style={{ background: `${c}15`, border: `1px solid ${c}40`, color: c }}>
+                {PHASE_LABELS[m.phase]} #{m.n}
+              </span>
+              <span class="text-xs text-slate-400">{mood.icon}</span>
+            </div>
+
+            <div class="flex items-center justify-around my-4">
+              <div class="text-center flex-1">
+                <div class="text-2xl opacity-20">⚽</div>
+                <div class="text-[10px] text-slate-500 italic mt-1 font-medium">Belum Pasti</div>
+              </div>
+              <div class="text-center px-4">
+                <div class="mono text-lg font-black tracking-wider" style={{ color: c, textShadow: `0 0 10px ${c}60` }}>{m.t}</div>
+                <div class="text-[8px] font-extrabold tracking-widest text-slate-500 mt-0.5">MYT</div>
+              </div>
+              <div class="text-center flex-1">
+                <div class="text-2xl opacity-20">⚽</div>
+                <div class="text-[10px] text-slate-500 italic mt-1 font-medium">Belum Pasti</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-4 pt-3 border-t border-slate-800/60 flex items-center justify-between text-[10px]">
+            <span class="text-slate-500">📍 {m.v}</span>
+            <span class={`px-2 py-0.5 rounded font-black tracking-wider text-[9px] ${status.class}`}>{status.label}</span>
+          </div>
+        </div>
+      );
+    }
+
+    // ── APP INDUK ─────────────────────────────────────────────────────────────
+    function App() {
+      const [tab, setTab] = useState('GS');
+      const [grp, setGrp] = useState('ALL');
+      const [statusFilter, setStatusFilter] = useState('ALL');
+      const [favOnly, setFavOnly] = useState(false);
+      const [q, setQ] = useState('');
+      const [favTeams, setFavTeams] = useState(() => {
+        const saved = localStorage.getItem('wc2026_fav_teams');
+        return saved ? JSON.parse(saved) : [];
+      });
+
+      useEffect(() => {
+        localStorage.setItem('wc2026_fav_teams', JSON.stringify(favTeams));
+      }, [favTeams]);
+
+      const toggleFav = (teamA, teamB) => {
+        setFavTeams(prev => {
+          let updated = [...prev];
+          [teamA, teamB].forEach(team => {
+            if (updated.includes(team)) {
+              // Jika dah ada, kita hanya buang kalau user klik unstar (logik dipermudah untuk pasang/padam kelompok)
+              // Untuk elak salah buang team lain, kita check satu-satu
+            }
+          });
+          // Logik toggle bersih berasaskan team individu
+          const hasA = prev.includes(teamA);
+          const hasB = prev.includes(teamB);
+          
+          if (hasA && hasB) {
+            return prev.filter(t => t !== teamA && t !== teamB);
+          } else {
+            return [...new Set([...prev, teamA, teamB])];
+          }
+        });
+      };
+
+      const TABS = [
+        {id:'GS',    label:'⚽ Peringkat Kumpulan'},
+        {id:'R32',   label:'Pusingan 32'},
+        {id:'R16',   label:'Pusingan 16'},
+        {id:'QF',    label:'Suku Akhir'},
+        {id:'SF',    label:'Separuh Akhir'},
+        {id:'BRONZE',label:'Tempat ke-3 🥉'},
+        {id:'FINAL', label:'FINAL 🏆'},
+      ];
+
+      // Tapis perlawanan secara menyeluruh
+      const filteredMatches = useMemo(() => {
+        let arr = tab === 'GS' ? GS : KO.filter(m => m.phase === tab);
+        
+        if (tab === 'GS' && grp !== 'ALL') arr = arr.filter(m => m.g === grp);
+        
+        if (statusFilter !== 'ALL') {
+          arr = arr.filter(m => getMatchStatus(m.d, m.t).code === statusFilter);
+        }
+
+        if (favOnly) {
+          arr = arr.filter(m => favTeams.includes(m.h) || favTeams.includes(m.a));
+        }
+
+        if (q.trim()) {
+          const lq = q.toLowerCase();
+          arr = arr.filter(m =>
+            (m.h||'').toLowerCase().includes(lq) ||
+            (m.a||'').toLowerCase().includes(lq) ||
+            (m.v||'').toLowerCase().includes(lq)
+          );
+        }
+        return arr;
+      }, [tab, grp, statusFilter, favOnly, q, favTeams]);
+
+      // Atur data mengikut tarikh perlawanan
+      const groupedByDate = useMemo(() => {
+        const map = {};
+        for (const m of filteredMatches) {
+          if (!map[m.d]) map[m.d] = [];
+          map[m.d].push(m);
+        }
+        return Object.entries(map).sort(([a],[b]) => (a < b ? -1 : 1));
+      }, [filteredMatches]);
+
+      // Ambil 1 perlawanan akan datang yang terdekat untuk kaunter
+      const nextMatch = useMemo(() => {
+        const now = new Date();
+        const all = [...GS, ...KO].sort((a,b) => new Date(`${a.d}T${a.t}`) - new Date(`${b.d}T${b.t}`));
+        return all.find(m => new Date(`${m.d}T${m.t}`) - now > 0);
+      }, []);
+
+      const isGS = tab === 'GS';
+      const todayStr = new Date().toLocaleDateString('sv-SE');
+
+      return (
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fadeIn">
+          
+          {/* ── HEADER HERO ────────────────────────────────── */}
+          <div class="relative rounded-3xl overflow-hidden glass border border-slate-800/80 p-6 sm:p-10 mb-8 shadow-2xl shadow-cyan-950/20">
+            <div class="absolute -top-24 -left-20 w-80 height-80 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-24 -right-20 w-80 height-80 bg-amber-500/5 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6 relative z-10">
+              <div>
+                <span class="text-xs font-extrabold tracking-widest text-amber-400 uppercase bg-amber-400/10 border border-amber-400/20 px-3 py-1 rounded-full">
+                  ⚡ ENGINE POLISHED VERSION
+                </span>
+                <h1 class="text-3xl sm:text-5xl font-black tracking-tight text-white mt-3 bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text">
+                  JADUAL PIALA DUNIA 2026
+                </h1>
+                <p class="text-cyan-400 font-bold tracking-wide mt-2 text-sm sm:text-base">
+                  WAKTU MALAYSIA · MYT (UTC+8)
+                </p>
+                <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-slate-400 mt-4 font-medium">
+                  <span>🇲🇽 Mexico · 🇨🇦 Kanada · 🇺🇸 USA</span>
+                  <span class="text-slate-700">•</span>
+                  <span>104 Perlawanan</span>
+                  <span class="text-slate-700">•</span>
+                  <span>11 Jun – 20 Jul 2026</span>
+                </div>
+              </div>
+
+              {/* Countdown & Live Widget */}
+              {nextMatch && (
+                <div class="bg-slate-950/60 border border-slate-800 p-4 rounded-2xl min-w-[260px] shadow-inner">
+                  <div class="text-[10px] font-bold tracking-widest text-slate-500 uppercase">Perlawanan Seterusnya</div>
+                  <div class="flex items-center gap-2 mt-2">
+                    <span class="text-xl">{FLAGS[nextMatch.h] || '⚽'}</span>
+                    <span class="text-xs font-bold truncate max-w-[140px]">{nextMatch.h || 'Kalah Mati'} vs {nextMatch.a || 'Kalah Mati'}</span>
+                  </div>
+                  <div class="mt-3 flex items-baseline gap-2">
+                    <span class="mono text-2xl font-black text-amber-400">{nextMatch.t}</span>
+                    <span class="text-[10px] text-slate-400 font-semibold">{fmtDate(nextMatch.d)}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* ── INTERFACE NAVIGATION & FILTERS ──────────────── */}
+          <div class="sticky top-4 z-40 bg-slate-950/80 backdrop-blur-md p-3 rounded-2xl border border-slate-800/80 shadow-xl mb-6">
+            <div class="flex gap-2 overflow-x-auto pb-2 sm:pb-0 no-scrollbar">
+              {TABS.map(t => (
+                <button
+                  key={t.id}
+                  onClick={() => { setTab(t.id); setGrp('ALL'); }}
+                  class={`px-4 py-2 rounded-xl text-xs font-extrabold tracking-wide whitespace-nowrap transition-all duration-200 ${
+                    tab === t.id 
+                      ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 shadow-md shadow-amber-500/20 scale-[1.02]' 
+                      : 'bg-slate-900/60 text-slate-400 hover:text-white hover:bg-slate-800/60 border border-slate-800/40'
+                  }`}
+                >
+                  {t.label}
+                </button>
               ))}
             </div>
           </div>
-        ))}
-      </div>
 
-      {/* ── FOOTER ──────────────────────────────────────── */}
-      <div style={{
-        textAlign:'center',padding:'16px 20px',
-        borderTop:'1px solid rgba(12,32,72,0.3)',
-        fontSize:9,color:'#0E2038',lineHeight:1.9
-      }}>
-        Semua waktu dalam MYT (UTC+8) · Sumber: FIFA / Al Jazeera / ESPN<br/>
-        FIFA World Cup 2026™ · 48 Pasukan · 104 Perlawanan · USA · Kanada · Mexico
-      </div>
-    </div>
-  );
-}
+          {/* ── CONSOLE PENAPISAN (SECONDARY FILTERS) ───────── */}
+          <div class="glass border border-slate-800/60 rounded-2xl p-4 mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+            
+            {/* Input Carian */}
+            <div class="relative">
+              <input 
+                type="text" 
+                placeholder="Cari negara, bandar stadium..."
+                value={q}
+                onChange={e => setQ(e.target.value)}
+                class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-300 focus:outline-none focus:border-cyan-500/50 placeholder-slate-600 font-medium transition-colors"
+              />
+            </div>
 
+            {/* Filter Status Dinamik */}
+            <div class="flex gap-2">
+              {['ALL', 'LIVE', 'AKAN_DATANG', 'TAMAT'].map(status => (
+                <button
+                  key={status}
+                  onClick={() => setStatusFilter(status)}
+                  class={`flex-1 py-2 px-1 rounded-xl text-[10px] font-bold border transition-all ${
+                    statusFilter === status 
+                      ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/40' 
+                      : 'bg-slate-950/40 text-slate-500 border-slate-900 hover:text-slate-300'
+                  }`}
+                >
+                  {status === 'ALL' ? 'SEMUA' : status === 'LIVE' ? 'LIVE 🔥' : status === 'AKAN_DATANG' ? 'BELUM MULA' : 'TAMAT'}
+                </button>
+              ))}
+            </div>
 
-const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(React.createElement(App));
+            {/* Bookmark Filter Switch */}
+            <div class="flex items-center justify-end">
+              <button
+                onClick={() => setFavOnly(!favOnly)}
+                class={`w-full md:w-auto px-4 py-2.5 rounded-xl text-xs font-bold border flex items-center justify-center gap-2 transition-all ${
+                  favOnly 
+                    ? 'bg-amber-400/10 text-amber-400 border-amber-400/30' 
+                    : 'bg-slate-950/40 text-slate-500 border-slate-900 hover:text-slate-400'
+                }`}
+              >
+                <span>{favOnly ? '⭐ Memaparkan Pilihan Kau' : '☆ Tapis Pasukan Kegemaran'}</span>
+                {favTeams.length > 0 && <span class="bg-amber-400 text-slate-950 text-[9px] px-1.5 py-0.5 rounded-full font-black">{favTeams.length}</span>}
+              </button>
+            </div>
+          </div>
+
+          {/* CHIPS KUMPULAN (Hanya keluar bila dalam Tab Gs) */}
+          {isGS && (
+            <div class="flex gap-1.5 overflow-x-auto pb-4 no-scrollbar">
+              <button
+                onClick={() => setGrp('ALL')}
+                class={`px-3 py-1.5 rounded-lg text-[10px] font-black tracking-wider transition-all ${
+                  grp === 'ALL' ? 'bg-slate-100 text-slate-950' : 'bg-slate-900/60 text-slate-500 border border-slate-800/30'
+                }`}
+              >
+                SEMUA KUMPULAN
+              </button>
+              {'ABCDEFGHIJKL'.split('').map(g => (
+                <button
+                  key={g}
+                  onClick={() => setGrp(g)}
+                  class={`px-3 py-1.5 rounded-lg text-[10px] font-black transition-all ${
+                    grp === g 
+                      ? 'text-white' 
+                      : 'bg-slate-900/20 text-slate-500 hover:text-slate-400'
+                  }`}
+                  style={{ backgroundColor: grp === g ? GC[g] : '', border: `1px solid ${GC[g]}20` }}
+                >
+                  KUMP {g}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* INFORMASI KUMPULAN AKTIF */}
+          {isGS && grp !== 'ALL' && GROUPS[grp] && (
+            <div class="glass border rounded-xl p-3 mb-6 flex flex-wrap gap-4 items-center animate-slideIn" style={{ borderColor: `${GC[grp]}30`, background: `${GC[grp]}05` }}>
+              <span class="text-xs font-black tracking-widest uppercase" style={{ color: GC[grp] }}>KUMPULAN {grp}:</span>
+              <div class="flex flex-wrap gap-3">
+                {GROUPS[grp].map(t => (
+                  <span key={t} class={`text-xs font-semibold px-2 py-1 rounded bg-slate-900/80 border border-slate-800 ${favTeams.includes(t) ? 'text-amber-400 border-amber-500/30' : 'text-slate-300'}`}>
+                    {FLAGS[t]} {t}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* ── SENARAI PERLAWANAN UTAMA ────────────────────── */}
+          <div class="space-y-8">
+            {groupedByDate.length === 0 ? (
+              <div class="text-center text-slate-600 py-16 text-sm font-medium border border-dashed border-slate-900 rounded-2xl">
+                📭 Tiada jadual perlawanan ditemui mengikut penapisan kau.
+              </div>
+            ) : (
+              groupedByDate.map(([date, matches]) => {
+                const isToday = date === todayStr;
+                return (
+                  <div key={date} class="relative">
+                    {/* Pembahagi Tarikh */}
+                    <div class="flex items-center gap-4 my-4 sticky top-16 z-30 py-2 bg-slate-1000">
+                      <div class={`px-4 py-1.5 rounded-full text-xs font-extrabold tracking-wide flex items-center gap-2 ${
+                        isToday ? 'bg-red-600 text-white shadow-md shadow-red-600/30' : 'bg-slate-900 text-slate-400 border border-slate-800'
+                      }`}>
+                        {isToday && <span class="w-2 h-2 rounded-full bg-white animate-ping"></span>}
+                        {fmtDate(date)} {isToday && '· HARI INI'}
+                      </div>
+                      <div class="flex-1 h-[1px] bg-gradient-to-r from-slate-800 via-slate-950 to-transparent"></div>
+                    </div>
+
+                    {/* Grid Kad Perlawanan */}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                      {matches.map(m => isGS ? (
+                        <GroupCard 
+                          key={m.id} 
+                          m={m} 
+                          isFav={favTeams.includes(m.h) || favTeams.includes(m.a)} 
+                          toggleFav={toggleFav}
+                        />
+                      ) : (
+                        <KoCard key={m.id} m={m} />
+                      ))}
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+
+          {/* FOOTER */}
+          <footer class="mt-16 pt-6 border-t border-slate-900 text-center text-[10px] text-slate-600 font-medium tracking-wide leading-relaxed">
+            Semua zon waktu telah diselaraskan ke Waktu Malaysia (MYT - UTC+8). <br />
+            Data rujukan: FIFA / Al Jazeera / ESPN. Sedia untuk kegunaan premium peribadi.
+          </footer>
+
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(React.createElement(App));
   </script>
 </body>
 </html>
