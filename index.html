@@ -11,7 +11,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;500;600;700;800&family=JetBrains+Mono:wght@700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;500;600;700;800&family=JetBrains+Mono:wght=700;800&display=swap');
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
       background-color: #020617;
@@ -148,8 +148,8 @@
       {id:66,g:'G',h:'New Zealand',  a:'Belgium',       d:'2026-06-27',t:'11:00',v:'Vancouver'},
       {id:67,g:'L',h:'Panama',       a:'England',       d:'2026-06-28',t:'05:00',v:'New Jersey'},
       {id:68,g:'L',h:'Croatia',      a:'Ghana',         d:'2026-06-28',t:'05:00',v:'Philadelphia'},
-      {id:69,g:'K',h:'Colombia',     a:'Portugal',      d:'2026-06-28',t:'07:30',v:'Miami'},
       {id:70,g:'K',h:'DR Congo',     a:'Uzbekistan',    d:'2026-06-28',t:'07:30',v:'Atlanta'},
+      {id:69,g:'K',h:'Colombia',     a:'Portugal',      d:'2026-06-28',t:'07:30',v:'Miami'},
       {id:71,g:'J',h:'Algeria',      a:'Austria',       d:'2026-06-28',t:'10:00',v:'Kansas City'},
       {id:72,g:'J',h:'Jordan',       a:'Argentina',     d:'2026-06-28',t:'10:00',v:'Dallas'},
     ];
@@ -194,7 +194,6 @@
       return `${DAYS[d.getDay()]}, ${MONTHS[d.getMonth()]} ${d.getDate()} ${d.getFullYear()}`;
     }
 
-    // Fungsi pro untuk tukar format 24 jam kepada 12 jam berserta penanda AM/PM
     function formatTime12H(tStr) {
       if (!tStr) return '';
       const [hStr, mStr] = tStr.split(':');
@@ -225,7 +224,7 @@
       const diffHours = diffMs / (1000 * 60 * 60);
 
       if (diffHours >= 0 && diffHours <= 2) {
-        return { code: 'LIVE', label: 'LIVE 🔥', class: 'bg-red-500 text-white animate-pulse shadow-lg shadow-red-500/50' };
+        return { code: 'LIVE', label: 'LIVE 🔥', class: 'bg-red-500 text-white animate-pulse shadow-lg shadow-red-500/50 font-black' };
       } else if (diffHours > 2) {
         return { code: 'TAMAT', label: 'FINISHED', class: 'bg-slate-800 text-slate-400 border border-slate-700' };
       } else {
@@ -279,7 +278,6 @@
               </div>
 
               <div class="text-center px-1">
-                {/* Masa kini diformat kepada 12H AM/PM */}
                 <div class="mono text-[13px] font-black text-cyan-400 tracking-wide drop-shadow-[0_0_8px_rgba(6,182,212,0.4)] whitespace-nowrap">{formatTime12H(m.t)}</div>
                 <div class="text-[8px] font-extrabold tracking-widest text-slate-500 mt-0.5">MYT</div>
                 <div class="text-[9px] font-black text-slate-600 mt-1 tracking-widest">VS</div>
@@ -329,7 +327,6 @@
                 <div class="text-[10px] text-slate-500 italic mt-1 font-medium">TBD</div>
               </div>
               <div class="text-center px-4">
-                {/* Masa kini diformat kepada 12H AM/PM */}
                 <div class="mono text-sm font-black tracking-wider whitespace-nowrap" style={{ color: c, textShadow: `0 0 10px ${c}60` }}>{formatTime12H(m.t)}</div>
                 <div class="text-[8px] font-extrabold tracking-widest text-slate-500 mt-0.5">MYT</div>
               </div>
@@ -442,7 +439,6 @@
             
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6 relative z-10">
               <div>
-                {/* Watermark/Signmark telah dibuang sepenuhnya dari sini */}
                 <h1 class="text-3xl sm:text-5xl font-black tracking-tight text-white mt-1 bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text">
                   2026 FIFA WORLD CUP SCHEDULE
                 </h1>
@@ -477,8 +473,7 @@
                   </div>
                   <div class="mt-4 flex items-baseline justify-between gap-2 border-t border-slate-900 pt-2.5">
                     <div class="flex flex-col">
-                      {/* Masa perlawanan seterusnya ditukar ke 12H AM/PM */}
-                      <span class="mono text-sm font-black text-slate-300">{formatTime12H(nextMatch.t)}</span>
+                      <span class="mono text-xs font-black text-slate-300">{formatTime12H(nextMatch.t)}</span>
                       <span class="text-[9px] text-slate-500 font-semibold truncate max-w-[100px]">{fmtDate(nextMatch.d)}</span>
                     </div>
                     <div class="text-right">
@@ -605,7 +600,7 @@
             </div>
           )}
 
-          {/* ── MATCH ENGINE LIST ────────────────────── */}
+          {/* ── MATCH LIST ────────────────────── */}
           <div class="space-y-8">
             {groupedByDate.length === 0 ? (
               <div class="text-center text-slate-600 py-16 text-sm font-medium border border-dashed border-slate-900 rounded-2xl">
@@ -645,9 +640,10 @@
             )}
           </div>
 
-          {/* FOOTER */}
-          <footer class="mt-16 pt-6 border-t border-slate-900 text-center text-[10px] text-slate-600 font-medium tracking-wide">
-            All match times are configured to Malaysia Time (MYT - UTC+8). Official Tournament Schedule.
+          {/* FOOTER - Updated with clean signature */}
+          <footer class="mt-16 pt-6 border-t border-slate-900 text-center text-[10px] text-slate-600 font-medium tracking-wide flex flex-col items-center gap-1.5">
+            <span>All match times are configured to Malaysia Time (MYT - UTC+8). Official Tournament Schedule.</span>
+            <span class="text-slate-500 font-bold mt-0.5 tracking-wider">©2026 mfzf. All rights reserved.</span>
           </footer>
 
         </div>
