@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ms">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FIFA World Cup 2026 – Jadual Premium MYT</title>
+  <title>FIFA World Cup 2026 – Premium Schedule (MYT)</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- React & Babel -->
@@ -11,7 +11,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;500;600;700;800&family=JetBrains+Mono:wght=700;800&display=swap');
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
       background-color: #020617;
@@ -72,12 +72,12 @@
     };
 
     const PHASE_LABELS = {
-      R32:'Pusingan 32', R16:'Pusingan 16', QF:'Suku Akhir',
-      SF:'Separuh Akhir', BRONZE:'Tempat Ketiga 🥉', FINAL:'🏆 GRAND FINAL'
+      R32:'Round of 32', R16:'Round of 16', QF:'Quarter-finals',
+      SF:'Semi-finals', BRONZE:'Third Place Match 🥉', FINAL:'🏆 GRAND FINAL'
     };
 
-    const MONTHS = ['Jan','Feb','Mac','Apr','Mei','Jun','Jul','Ogs','Sep','Okt','Nov','Dis'];
-    const DAYS   = ['Ahad','Isnin','Selasa','Rabu','Khamis','Jumaat','Sabtu'];
+    const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const DAYS   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
     const GS = [
       {id:1, g:'A',h:'Mexico',       a:'South Africa', d:'2026-06-12',t:'03:00',v:'Mexico City'},
@@ -191,15 +191,15 @@
 
     function fmtDate(s) {
       const d = new Date(s + 'T12:00:00');
-      return `${DAYS[d.getDay()]}, ${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+      return `${DAYS[d.getDay()]}, ${MONTHS[d.getMonth()]} ${d.getDate()} ${d.getFullYear()}`;
     }
 
     function getMood(t) {
       const h = parseInt(t);
-      if (h < 6)  return { icon:'🌙', label:'Tengah Malam' };
-      if (h < 12) return { icon:'🌅', label:'Awal Pagi' };
-      if (h < 17) return { icon:'☀️', label:'Tengahari' };
-      return { icon:'🌆', label:'Malam' };
+      if (h < 6)  return { icon:'🌙', label:'Midnight' };
+      if (h < 12) return { icon:'🌅', label:'Morning' };
+      if (h < 17) return { icon:'☀️', label:'Afternoon' };
+      return { icon:'🌆', label:'Evening' };
     }
 
     function getFlagUrl(teamName) {
@@ -208,7 +208,6 @@
       return `https://flagcdn.com/w160/${code}.png`;
     }
 
-    // Mengira status perlawanan dinamik menerima hantaran 'now' dari parent ticker
     function getMatchStatus(dateStr, timeStr, now) {
       const matchTime = new Date(`${dateStr}T${timeStr}:00`);
       const diffMs = now - matchTime; 
@@ -217,24 +216,23 @@
       if (diffHours >= 0 && diffHours <= 2) {
         return { code: 'LIVE', label: 'LIVE 🔥', class: 'bg-red-500 text-white animate-pulse shadow-lg shadow-red-500/50' };
       } else if (diffHours > 2) {
-        return { code: 'TAMAT', label: 'TAMAT', class: 'bg-slate-800 text-slate-400 border border-slate-700' };
+        return { code: 'TAMAT', label: 'FINISHED', class: 'bg-slate-800 text-slate-400 border border-slate-700' };
       } else {
-        // Masa depan: Kira baki minit secara tepat
         const minsLeft = Math.ceil(Math.abs(diffMs) / (1000 * 60));
         
         if (minsLeft <= 30) {
-          return { code: 'AKAN_DATANG', label: `MULA DLM ${minsLeft}M ⏳`, class: 'bg-amber-500/20 text-amber-400 border border-amber-500/50 animate-pulse font-extrabold' };
-        } else if (minsLeft < 1440) { // Kurang dari 24 Jam
+          return { code: 'AKAN_DATANG', label: `STARTS IN ${minsLeft}M ⏳`, class: 'bg-amber-500/20 text-amber-400 border border-amber-500/50 animate-pulse font-extrabold' };
+        } else if (minsLeft < 1440) { 
           const h = Math.floor(minsLeft / 60);
           const m = minsLeft % 60;
-          return { code: 'AKAN_DATANG', label: `MULA DLM ${h}J ${m}M`, class: 'bg-cyan-950 text-cyan-400 border border-cyan-500/30 font-bold' };
+          return { code: 'AKAN_DATANG', label: `STARTS IN ${h}H ${m}M`, class: 'bg-cyan-950 text-cyan-400 border border-cyan-500/30 font-bold' };
         } else {
-          return { code: 'AKAN_DATANG', label: 'AKAN DATANG', class: 'bg-slate-900 text-slate-500 border border-slate-800' };
+          return { code: 'AKAN_DATANG', label: 'UPCOMING', class: 'bg-slate-900 text-slate-500 border border-slate-800' };
         }
       }
     }
 
-    // ── KUMPULAN CARD (GROUP STAGE) ───────────────────────────────────────────
+    // ── GROUP CARD ───────────────────────────────────────────────────────────
     function GroupCard({ m, isFav, toggleFav, now }) {
       const c = GC[m.g] || '#00E8FF';
       const mood = getMood(m.t);
@@ -248,7 +246,7 @@
           <div>
             <div class="flex justify-between items-center mb-4">
               <span class="text-[10px] font-extrabold tracking-wider px-2 py-0.5 rounded-full" style={{ background: `${c}15`, border: `1px solid ${c}40`, color: c }}>
-                KUMPULAN {m.g}
+                GROUP {m.g}
               </span>
               <div class="flex items-center gap-2">
                 <span class="text-xs text-slate-400">{mood.icon}</span>
@@ -292,7 +290,7 @@
       );
     }
 
-    // ── KALAH MATI CARD (KNOCKOUT STAGE) ──────────────────────────────────────
+    // ── KNOCKOUT CARD ────────────────────────────────────────────────────────
     function KoCard({ m, now }) {
       const isFinal = m.phase === 'FINAL';
       const isBronze = m.phase === 'BRONZE';
@@ -316,7 +314,7 @@
             <div class="flex items-center justify-around my-4">
               <div class="text-center flex-1">
                 <div class="text-2xl opacity-20">⚽</div>
-                <div class="text-[10px] text-slate-500 italic mt-1 font-medium">Belum Pasti</div>
+                <div class="text-[10px] text-slate-500 italic mt-1 font-medium">TBD</div>
               </div>
               <div class="text-center px-4">
                 <div class="mono text-lg font-black tracking-wider" style={{ color: c, textShadow: `0 0 10px ${c}60` }}>{m.t}</div>
@@ -324,7 +322,7 @@
               </div>
               <div class="text-center flex-1">
                 <div class="text-2xl opacity-20">⚽</div>
-                <div class="text-[10px] text-slate-500 italic mt-1 font-medium">Belum Pasti</div>
+                <div class="text-[10px] text-slate-500 italic mt-1 font-medium">TBD</div>
               </div>
             </div>
           </div>
@@ -337,15 +335,13 @@
       );
     }
 
-    // ── APP INDUK ─────────────────────────────────────────────────────────────
+    // ── MAIN APP ─────────────────────────────────────────────────────────────
     function App() {
       const [tab, setTab] = useState('GS');
       const [grp, setGrp] = useState('ALL');
       const [statusFilter, setStatusFilter] = useState('ALL');
       const [favOnly, setFavOnly] = useState(false);
       const [q, setQ] = useState('');
-      
-      // State masa realtime global yang menggerakkan seluruh jam dan countdown dalam sistem
       const [now, setNow] = useState(new Date());
 
       const [favTeams, setFavTeams] = useState(() => {
@@ -353,7 +349,6 @@
         return saved ? JSON.parse(saved) : [];
       });
 
-      // Menghidupkan jantung sistem detik (Ticking Heartbeat)
       useEffect(() => {
         const interval = setInterval(() => {
           setNow(new Date());
@@ -378,12 +373,12 @@
       };
 
       const TABS = [
-        {id:'GS',    label:'⚽ Peringkat Kumpulan'},
-        {id:'R32',   label:'Pusingan 32'},
-        {id:'R16',   label:'Pusingan 16'},
-        {id:'QF',    label:'Suku Akhir'},
-        {id:'SF',    label:'Separuh Akhir'},
-        {id:'BRONZE',label:'Tempat ke-3 🥉'},
+        {id:'GS',    label:'⚽ Group Stage'},
+        {id:'R32',   label:'Round of 32'},
+        {id:'R16',   label:'Round of 16'},
+        {id:'QF',    label:'Quarter-finals'},
+        {id:'SF',    label:'Semi-finals'},
+        {id:'BRONZE',label:'3rd Place Match 🥉'},
         {id:'FINAL', label:'FINAL 🏆'},
       ];
 
@@ -434,29 +429,29 @@
             
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6 relative z-10">
               <div>
-                <span class="text-xs font-extrabold tracking-widest text-amber-400 uppercase bg-amber-400/10 border border-amber-400/20 px-3 py-1 rounded-full">
-                  ⚡ ENGINE POLISHED VERSION 3.0 (REALTIME COUNTDOWN)
+                <span class="text-[10px] font-extrabold tracking-widest text-amber-400 uppercase bg-amber-400/10 border border-amber-400/20 px-3 py-1 rounded-full">
+                  ⚡ ENGINE POLISHED VERSION 4.0 (GLOBAL PREMIUM STANDARD)
                 </span>
                 <h1 class="text-3xl sm:text-5xl font-black tracking-tight text-white mt-3 bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text">
-                  JADUAL PIALA DUNIA 2026
+                  2026 FIFA WORLD CUP SCHEDULE
                 </h1>
                 <p class="text-cyan-400 font-bold tracking-wide mt-2 text-sm sm:text-base">
-                  WAKTU MALAYSIA · MYT (UTC+8)
+                  MALAYSIA TIME · MYT (UTC+8)
                 </p>
                 <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-slate-400 mt-4 font-medium">
-                  <span>🇲🇽 Mexico · 🇨🇦 Kanada · 🇺🇸 USA</span>
+                  <span>🇲🇽 Mexico · 🇨🇦 Canada · 🇺🇸 USA</span>
                   <span class="text-slate-700">•</span>
-                  <span>104 Perlawanan</span>
+                  <span>104 Matches</span>
                   <span class="text-slate-700">•</span>
-                  <span>11 Jun – 20 Jul 2026</span>
+                  <span>June 11 – July 20, 2026</span>
                 </div>
               </div>
 
-              {/* Countdown Live Widget */}
+              {/* Countdown Widget */}
               {nextMatch && (
                 <div class="bg-slate-950/60 border border-slate-800 p-4 rounded-2xl min-w-[290px] shadow-inner flex flex-col justify-between">
                   <div>
-                    <div class="text-[10px] font-bold tracking-widest text-slate-500 uppercase">Perlawanan Seterusnya</div>
+                    <div class="text-[10px] font-bold tracking-widest text-slate-500 uppercase">Next Match</div>
                     <div class="flex items-center gap-2 mt-2.5">
                       <div class="flex items-center gap-1.5 bg-slate-900/90 px-2 py-1 rounded border border-slate-800">
                         <img src={getFlagUrl(nextMatch.h)} alt="" class="w-4 h-2.5 object-cover rounded-sm shadow-sm" />
@@ -475,17 +470,17 @@
                       <span class="text-[9px] text-slate-500 font-semibold truncate max-w-[100px]">{fmtDate(nextMatch.d)}</span>
                     </div>
                     <div class="text-right">
-                      <div class="text-[8px] font-bold text-slate-500 tracking-wider uppercase">Mula Dalam</div>
+                      <div class="text-[8px] font-bold text-slate-500 tracking-wider uppercase">Starts In</div>
                       <div class="mono text-xs font-extrabold text-amber-400 bg-amber-500/5 border border-amber-500/20 px-2 py-0.5 rounded shadow-sm">
                         {(() => {
                           const mTime = new Date(`${nextMatch.d}T${nextMatch.t}:00`);
                           const diff = mTime - now;
-                          if (diff <= 0) return "Sedia Mula..";
+                          if (diff <= 0) return "Starting Soon...";
                           const s = Math.floor((diff / 1000) % 60);
                           const m = Math.floor((diff / (1000 * 60)) % 60);
                           const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
                           const d = Math.floor(diff / (1000 * 60 * 60 * 24));
-                          return `${d > 0 ? d + 'h ' : ''}${h > 0 || d > 0 ? h + 'j ' : ''}${m}m ${s}s`;
+                          return `${d > 0 ? d + 'd ' : ''}${h > 0 || d > 0 ? h + 'h ' : ''}${m}m ${s}s`;
                         })()}
                       </div>
                     </div>
@@ -495,7 +490,7 @@
             </div>
           </div>
 
-          {/* ── INTERFACE NAVIGATION & FILTERS ──────────────── */}
+          {/* ── NAVIGATION STICKY ──────────────── */}
           <div class="sticky top-4 z-40 bg-slate-950/80 backdrop-blur-md p-3 rounded-2xl border border-slate-800/80 shadow-xl mb-6">
             <div class="flex gap-2 overflow-x-auto pb-2 sm:pb-0 no-scrollbar">
               {TABS.map(t => (
@@ -514,12 +509,12 @@
             </div>
           </div>
 
-          {/* ── CONSOLE PENAPISAN ───────── */}
+          {/* ── SEARCH & FILTER CONSOLE ───────── */}
           <div class="glass border border-slate-800/60 rounded-2xl p-4 mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
             <div class="relative">
               <input 
                 type="text" 
-                placeholder="Cari negara, bandar stadium..."
+                placeholder="Search country, venue city..."
                 value={q}
                 onChange={e => setQ(e.target.value)}
                 class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-300 focus:outline-none focus:border-cyan-500/50 placeholder-slate-600 font-medium transition-colors"
@@ -537,7 +532,7 @@
                       : 'bg-slate-950/40 text-slate-500 border-slate-900 hover:text-slate-300'
                   }`}
                 >
-                  {status === 'ALL' ? 'SEMUA' : status === 'LIVE' ? 'LIVE 🔥' : status === 'AKAN_DATANG' ? 'BELUM MULA' : 'TAMAT'}
+                  {status === 'ALL' ? 'ALL' : status === 'LIVE' ? 'LIVE 🔥' : status === 'AKAN_DATANG' ? 'UPCOMING' : 'FINISHED'}
                 </button>
               ))}
             </div>
@@ -551,13 +546,13 @@
                     : 'bg-slate-950/40 text-slate-500 border-slate-900 hover:text-slate-400'
                 }`}
               >
-                <span>{favOnly ? '⭐ Memaparkan Pilihan' : '☆ Tapis Pasukan Kegemaran'}</span>
+                <span>{favOnly ? '⭐ Showing Favorites' : '☆ Filter Favorite Teams'}</span>
                 {favTeams.length > 0 && <span class="bg-amber-400 text-slate-950 text-[9px] px-1.5 py-0.5 rounded-full font-black">{favTeams.length}</span>}
               </button>
             </div>
           </div>
 
-          {/* CHIPS KUMPULAN */}
+          {/* GROUP CHIPS */}
           {isGS && (
             <div class="flex gap-1.5 overflow-x-auto pb-4 no-scrollbar">
               <button
@@ -566,7 +561,7 @@
                   grp === 'ALL' ? 'bg-slate-100 text-slate-950' : 'bg-slate-900/60 text-slate-500 border border-slate-800/30'
                 }`}
               >
-                SEMUA KUMPULAN
+                ALL GROUPS
               </button>
               {'ABCDEFGHIJKL'.split('').map(g => (
                 <button
@@ -577,16 +572,16 @@
                   }`}
                   style={{ backgroundColor: grp === g ? GC[g] : '', border: `1px solid ${GC[g]}20` }}
                 >
-                  KUMP {g}
+                  GRP {g}
                 </button>
               ))}
             </div>
           )}
 
-          {/* INFORMASI KUMPULAN AKTIF */}
+          {/* ACTIVE GROUP INFO STRIP */}
           {isGS && grp !== 'ALL' && GROUPS[grp] && (
             <div class="glass border rounded-xl p-3 mb-6 flex flex-wrap gap-4 items-center" style={{ borderColor: `${GC[grp]}30`, background: `${GC[grp]}05` }}>
-              <span class="text-xs font-black tracking-widest uppercase" style={{ color: GC[grp] }}>KUMPULAN {grp}:</span>
+              <span class="text-xs font-black tracking-widest uppercase" style={{ color: GC[grp] }}>GROUP {grp}:</span>
               <div class="flex flex-wrap gap-3">
                 {GROUPS[grp].map(t => (
                   <span key={t} class={`text-xs font-semibold px-2 py-1 rounded bg-slate-900/80 border border-slate-800 flex items-center gap-1.5 ${favTeams.includes(t) ? 'text-amber-400 border-amber-500/30' : 'text-slate-300'}`}>
@@ -598,11 +593,11 @@
             </div>
           )}
 
-          {/* ── SENARAI PERLAWANAN UTAMA ────────────────────── */}
+          {/* ── MATCH ENGINE LIST ────────────────────── */}
           <div class="space-y-8">
             {groupedByDate.length === 0 ? (
               <div class="text-center text-slate-600 py-16 text-sm font-medium border border-dashed border-slate-900 rounded-2xl">
-                📭 Tiada jadual perlawanan ditemui mengikut penapisan kau.
+                📭 No matches found matching your filters.
               </div>
             ) : (
               groupedByDate.map(([date, matches]) => {
@@ -614,7 +609,7 @@
                         isToday ? 'bg-red-600 text-white shadow-md shadow-red-600/30' : 'bg-slate-900 text-slate-400 border border-slate-800'
                       }`}>
                         {isToday && <span class="w-2 h-2 rounded-full bg-white animate-ping"></span>}
-                        {fmtDate(date)} {isToday && '· HARI INI'}
+                        {fmtDate(date)} {isToday && '· TODAY'}
                       </div>
                       <div class="flex-1 h-[1px] bg-gradient-to-r from-slate-800 via-slate-950 to-transparent"></div>
                     </div>
@@ -640,8 +635,8 @@
 
           {/* FOOTER */}
           <footer class="mt-16 pt-6 border-t border-slate-900 text-center text-[10px] text-slate-600 font-medium tracking-wide">
-            Semua zon waktu telah diselaraskan ke Waktu Malaysia (MYT - UTC+8). <br />
-            Sistem dikuasakan oleh Real-Time Countdown Engine V3. Auto-ticking aktif.
+            All match times are configured to Malaysia Time (MYT - UTC+8). <br />
+            Powered by Real-Time Countdown Engine V4. Global Premium Enterprise Edition.
           </footer>
 
         </div>
