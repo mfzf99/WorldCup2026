@@ -4,7 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FIFA World Cup 2026 – Jadual Premium MYT</title>
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- React & Babel -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
@@ -33,19 +35,20 @@
   <script type="text/babel">
     const { useState, useMemo, useEffect } = React;
 
-    const FLAGS = {
-      'Mexico':'🇲🇽','South Africa':'🇿🇦','South Korea':'🇰🇷','Czechia':'🇨🇿',
-      'Canada':'🇨🇦','Bosnia':'🇧🇦','Qatar':'🇶🇦','Switzerland':'🇨🇭',
-      'Brazil':'🇧🇷','Morocco':'🇲🇦','Haiti':'🇭🇹','Scotland':'🏴󠁧󠁢󠁳󠁣󠁴󠁿',
-      'USA':'🇺🇸','Paraguay':'🇵🇾','Australia':'🇦🇺','Türkiye':'🇹🇷',
-      'Germany':'🇩🇪','Curaçao':'🇨🇼','Ivory Coast':'🇨🇮','Ecuador':'🇪🇨',
-      'Netherlands':'🇳🇱','Japan':'🇯🇵','Sweden':'🇸🇪','Tunisia':'🇹🇳',
-      'Belgium':'🇧🇪','Egypt':'🇪🇬','Iran':'🇮🇷','New Zealand':'🇳🇿',
-      'Spain':'🇪🇸','Cape Verde':'🇨🇻','Saudi Arabia':'🇸🇦','Uruguay':'🇺🇾',
-      'France':'🇫🇷','Senegal':'🇸🇳','Iraq':'🇮🇶','Norway':'🇳🇴',
-      'Argentina':'🇦🇷','Algeria':'🇩🇿','Austria':'🇹🇹','Jordan':'🇯🇴',
-      'Portugal':'🇵🇹','DR Congo':'🇨🇩','Uzbekistan':'🇺🇿','Colombia':'🇨🇴',
-      'England':'🏴󠁧󠁢󠁥󠁮󠁧󠁿','Croatia':'🇭🇷','Ghana':'🇬🇭','Panama':'🇵🇦'
+    // Pemetaan kod negara 2-huruf ISO rasmi untuk FlagCDN
+    const FLAG_CODES = {
+      'Mexico': 'mx', 'South Africa': 'za', 'South Korea': 'kr', 'Czechia': 'cz',
+      'Canada': 'ca', 'Bosnia': 'ba', 'Qatar': 'qa', 'Switzerland': 'ch',
+      'Brazil': 'br', 'Morocco': 'ma', 'Haiti': 'ht', 'Scotland': 'gb-sct',
+      'USA': 'us', 'Paraguay': 'py', 'Australia': 'au', 'Türkiye': 'tr',
+      'Germany': 'de', 'Curaçao': 'cw', 'Ivory Coast': 'ci', 'Ecuador': 'ec',
+      'Netherlands': 'nl', 'Japan': 'jp', 'Sweden': 'se', 'Tunisia': 'tn',
+      'Belgium': 'be', 'Egypt': 'eg', 'Iran': 'ir', 'New Zealand': 'nz',
+      'Spain': 'es', 'Cape Verde': 'cv', 'Saudi Arabia': 'sa', 'Uruguay': 'uy',
+      'France': 'fr', 'Senegal': 'sn', 'Iraq': 'iq', 'Norway': 'no',
+      'Argentina': 'ar', 'Algeria': 'dz', 'Austria': 'at', 'Jordan': 'jo',
+      'Portugal': 'pt', 'DR Congo': 'cd', 'Uzbekistan': 'uz', 'Colombia': 'co',
+      'England': 'gb-eng', 'Croatia': 'hr', 'Ghana': 'gh', 'Panama': 'pa'
     };
 
     const GC = {
@@ -77,7 +80,6 @@
     const MONTHS = ['Jan','Feb','Mac','Apr','Mei','Jun','Jul','Ogs','Sep','Okt','Nov','Dis'];
     const DAYS   = ['Ahad','Isnin','Selasa','Rabu','Khamis','Jumaat','Sabtu'];
 
-    // Data Perlawanan Kumpulan (GS) & Kalah Mati (KO) asal kekal tanpa ubah jadual masa
     const GS = [
       {id:1, g:'A',h:'Mexico',       a:'South Africa', d:'2026-06-12',t:'03:00',v:'Mexico City'},
       {id:2, g:'A',h:'South Korea',  a:'Czechia',       d:'2026-06-12',t:'10:00',v:'Zapopan'},
@@ -201,7 +203,12 @@
       return { icon:'🌆', label:'Malam' };
     }
 
-    // Mengira status perlawanan berdasarkan masa sebenar sistem
+    function getFlagUrl(teamName) {
+      const code = FLAG_CODES[teamName];
+      if (!code) return null;
+      return `https://flagcdn.com/w160/${code}.png`;
+    }
+
     function getMatchStatus(dateStr, timeStr) {
       const matchTime = new Date(`${dateStr}T${timeStr}:00`);
       const now = new Date();
@@ -229,7 +236,7 @@
           style={{ borderColor: `${c}25`, borderTop: `3px solid ${c}` }}
         >
           <div>
-            <div class="flex justify-between items-center mb-3">
+            <div class="flex justify-between items-center mb-4">
               <span class="text-[10px] font-extrabold tracking-wider px-2 py-0.5 rounded-full" style={{ background: `${c}15`, border: `1px solid ${c}40`, color: c }}>
                 KUMPULAN {m.g}
               </span>
@@ -244,30 +251,42 @@
               </div>
             </div>
 
-            <div class="flex items-center justify-between gap-2 my-2">
+            <div class="grid grid-cols-3 items-center gap-1 my-2">
               {/* Home Team */}
-              <div class="flex-1 flex flex-col items-center text-center">
-                <span class="text-3xl filter drop-shadow-md transform group-hover:scale-110 transition-transform duration-300">{FLAGS[m.h] || '🏳️'}</span>
-                <span class="text-xs font-bold text-slate-200 mt-2 line-clamp-1">{m.h}</span>
+              <div class="flex flex-col items-center text-center">
+                <div class="w-14 h-9 overflow-hidden rounded shadow-md border border-slate-800 flex items-center justify-center bg-slate-950 transform group-hover:scale-105 transition-transform duration-300">
+                  {getFlagUrl(m.h) ? (
+                    <img src={getFlagUrl(m.h)} alt={m.h} class="w-full h-full object-cover" />
+                  ) : (
+                    <span class="text-xl">🏳️</span>
+                  )}
+                </div>
+                <span class="text-[11px] font-extrabold text-slate-200 mt-2 line-clamp-1 w-full">{m.h}</span>
               </div>
 
               {/* Center Info */}
-              <div class="text-center px-2 min-w-[75px]">
-                <div class="mono text-lg font-black text-cyan-400 tracking-wider drop-shadow-[0_0_8px_rgba(6,182,212,0.5)]">{m.t}</div>
+              <div class="text-center px-1">
+                <div class="mono text-base font-black text-cyan-400 tracking-wider drop-shadow-[0_0_8px_rgba(6,182,212,0.4)]">{m.t}</div>
                 <div class="text-[8px] font-extrabold tracking-widest text-slate-500 mt-0.5">MYT</div>
                 <div class="text-[9px] font-black text-slate-600 mt-1 tracking-widest">VS</div>
               </div>
 
               {/* Away Team */}
-              <div class="flex-1 flex flex-col items-center text-center">
-                <span class="text-3xl filter drop-shadow-md transform group-hover:scale-110 transition-transform duration-300">{FLAGS[m.a] || '🏳️'}</span>
-                <span class="text-xs font-bold text-slate-200 mt-2 line-clamp-1">{m.a}</span>
+              <div class="flex flex-col items-center text-center">
+                <div class="w-14 h-9 overflow-hidden rounded shadow-md border border-slate-800 flex items-center justify-center bg-slate-950 transform group-hover:scale-105 transition-transform duration-300">
+                  {getFlagUrl(m.a) ? (
+                    <img src={getFlagUrl(m.a)} alt={m.a} class="w-full h-full object-cover" />
+                  ) : (
+                    <span class="text-xl">🏳️</span>
+                  )}
+                </div>
+                <span class="text-[11px] font-extrabold text-slate-200 mt-2 line-clamp-1 w-full">{m.a}</span>
               </div>
             </div>
           </div>
 
           <div class="mt-4 pt-3 border-t border-slate-800/60 flex items-center justify-between text-[10px]">
-            <span class="text-slate-500 truncate max-w-[120px]">📍 {m.v}</span>
+            <span class="text-slate-500 truncate max-w-[110px]">📍 {m.v}</span>
             <span class={`px-2 py-0.5 rounded font-black tracking-wider text-[9px] ${status.class}`}>{status.label}</span>
           </div>
         </div>
@@ -337,17 +356,8 @@
 
       const toggleFav = (teamA, teamB) => {
         setFavTeams(prev => {
-          let updated = [...prev];
-          [teamA, teamB].forEach(team => {
-            if (updated.includes(team)) {
-              // Jika dah ada, kita hanya buang kalau user klik unstar (logik dipermudah untuk pasang/padam kelompok)
-              // Untuk elak salah buang team lain, kita check satu-satu
-            }
-          });
-          // Logik toggle bersih berasaskan team individu
           const hasA = prev.includes(teamA);
           const hasB = prev.includes(teamB);
-          
           if (hasA && hasB) {
             return prev.filter(t => t !== teamA && t !== teamB);
           } else {
@@ -366,20 +376,15 @@
         {id:'FINAL', label:'FINAL 🏆'},
       ];
 
-      // Tapis perlawanan secara menyeluruh
       const filteredMatches = useMemo(() => {
         let arr = tab === 'GS' ? GS : KO.filter(m => m.phase === tab);
-        
         if (tab === 'GS' && grp !== 'ALL') arr = arr.filter(m => m.g === grp);
-        
         if (statusFilter !== 'ALL') {
           arr = arr.filter(m => getMatchStatus(m.d, m.t).code === statusFilter);
         }
-
         if (favOnly) {
           arr = arr.filter(m => favTeams.includes(m.h) || favTeams.includes(m.a));
         }
-
         if (q.trim()) {
           const lq = q.toLowerCase();
           arr = arr.filter(m =>
@@ -391,7 +396,6 @@
         return arr;
       }, [tab, grp, statusFilter, favOnly, q, favTeams]);
 
-      // Atur data mengikut tarikh perlawanan
       const groupedByDate = useMemo(() => {
         const map = {};
         for (const m of filteredMatches) {
@@ -401,7 +405,6 @@
         return Object.entries(map).sort(([a],[b]) => (a < b ? -1 : 1));
       }, [filteredMatches]);
 
-      // Ambil 1 perlawanan akan datang yang terdekat untuk kaunter
       const nextMatch = useMemo(() => {
         const now = new Date();
         const all = [...GS, ...KO].sort((a,b) => new Date(`${a.d}T${a.t}`) - new Date(`${b.d}T${b.t}`));
@@ -412,17 +415,17 @@
       const todayStr = new Date().toLocaleDateString('sv-SE');
 
       return (
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fadeIn">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           
           {/* ── HEADER HERO ────────────────────────────────── */}
           <div class="relative rounded-3xl overflow-hidden glass border border-slate-800/80 p-6 sm:p-10 mb-8 shadow-2xl shadow-cyan-950/20">
-            <div class="absolute -top-24 -left-20 w-80 height-80 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
-            <div class="absolute -bottom-24 -right-20 w-80 height-80 bg-amber-500/5 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -top-24 -left-20 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-24 -right-20 w-80 h-80 bg-amber-500/5 rounded-full blur-3xl pointer-events-none"></div>
             
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6 relative z-10">
               <div>
                 <span class="text-xs font-extrabold tracking-widest text-amber-400 uppercase bg-amber-400/10 border border-amber-400/20 px-3 py-1 rounded-full">
-                  ⚡ ENGINE POLISHED VERSION
+                  ⚡ ENGINE POLISHED VERSION 2.0 (HD FLAGS)
                 </span>
                 <h1 class="text-3xl sm:text-5xl font-black tracking-tight text-white mt-3 bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text">
                   JADUAL PIALA DUNIA 2026
@@ -439,15 +442,24 @@
                 </div>
               </div>
 
-              {/* Countdown & Live Widget */}
+              {/* Countdown Widget */}
               {nextMatch && (
-                <div class="bg-slate-950/60 border border-slate-800 p-4 rounded-2xl min-w-[260px] shadow-inner">
-                  <div class="text-[10px] font-bold tracking-widest text-slate-500 uppercase">Perlawanan Seterusnya</div>
-                  <div class="flex items-center gap-2 mt-2">
-                    <span class="text-xl">{FLAGS[nextMatch.h] || '⚽'}</span>
-                    <span class="text-xs font-bold truncate max-w-[140px]">{nextMatch.h || 'Kalah Mati'} vs {nextMatch.a || 'Kalah Mati'}</span>
+                <div class="bg-slate-950/60 border border-slate-800 p-4 rounded-2xl min-w-[280px] shadow-inner flex flex-col justify-between">
+                  <div>
+                    <div class="text-[10px] font-bold tracking-widest text-slate-500 uppercase">Perlawanan Seterusnya</div>
+                    <div class="flex items-center gap-3 mt-2.5">
+                      <div class="flex items-center gap-1.5 bg-slate-900/90 px-2 py-1 rounded border border-slate-800">
+                        <img src={getFlagUrl(nextMatch.h)} alt="" class="w-5 h-3.5 object-cover rounded-sm shadow-sm" />
+                        <span class="text-xs font-bold text-slate-300 max-w-[60px] truncate">{nextMatch.h}</span>
+                      </div>
+                      <span class="text-[10px] font-bold text-slate-600">VS</span>
+                      <div class="flex items-center gap-1.5 bg-slate-900/90 px-2 py-1 rounded border border-slate-800">
+                        <img src={getFlagUrl(nextMatch.a)} alt="" class="w-5 h-3.5 object-cover rounded-sm shadow-sm" />
+                        <span class="text-xs font-bold text-slate-300 max-w-[60px] truncate">{nextMatch.a}</span>
+                      </div>
+                    </div>
                   </div>
-                  <div class="mt-3 flex items-baseline gap-2">
+                  <div class="mt-4 flex items-baseline justify-between">
                     <span class="mono text-2xl font-black text-amber-400">{nextMatch.t}</span>
                     <span class="text-[10px] text-slate-400 font-semibold">{fmtDate(nextMatch.d)}</span>
                   </div>
@@ -475,10 +487,8 @@
             </div>
           </div>
 
-          {/* ── CONSOLE PENAPISAN (SECONDARY FILTERS) ───────── */}
+          {/* ── CONSOLE PENAPISAN ───────── */}
           <div class="glass border border-slate-800/60 rounded-2xl p-4 mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-            
-            {/* Input Carian */}
             <div class="relative">
               <input 
                 type="text" 
@@ -489,7 +499,6 @@
               />
             </div>
 
-            {/* Filter Status Dinamik */}
             <div class="flex gap-2">
               {['ALL', 'LIVE', 'AKAN_DATANG', 'TAMAT'].map(status => (
                 <button
@@ -506,7 +515,6 @@
               ))}
             </div>
 
-            {/* Bookmark Filter Switch */}
             <div class="flex items-center justify-end">
               <button
                 onClick={() => setFavOnly(!favOnly)}
@@ -516,13 +524,13 @@
                     : 'bg-slate-950/40 text-slate-500 border-slate-900 hover:text-slate-400'
                 }`}
               >
-                <span>{favOnly ? '⭐ Memaparkan Pilihan Kau' : '☆ Tapis Pasukan Kegemaran'}</span>
+                <span>{favOnly ? '⭐ Memaparkan Pilihan' : '☆ Tapis Pasukan Kegemaran'}</span>
                 {favTeams.length > 0 && <span class="bg-amber-400 text-slate-950 text-[9px] px-1.5 py-0.5 rounded-full font-black">{favTeams.length}</span>}
               </button>
             </div>
           </div>
 
-          {/* CHIPS KUMPULAN (Hanya keluar bila dalam Tab Gs) */}
+          {/* CHIPS KUMPULAN */}
           {isGS && (
             <div class="flex gap-1.5 overflow-x-auto pb-4 no-scrollbar">
               <button
@@ -538,9 +546,7 @@
                   key={g}
                   onClick={() => setGrp(g)}
                   class={`px-3 py-1.5 rounded-lg text-[10px] font-black transition-all ${
-                    grp === g 
-                      ? 'text-white' 
-                      : 'bg-slate-900/20 text-slate-500 hover:text-slate-400'
+                    grp === g ? 'text-white' : 'bg-slate-900/20 text-slate-500 hover:text-slate-400'
                   }`}
                   style={{ backgroundColor: grp === g ? GC[g] : '', border: `1px solid ${GC[g]}20` }}
                 >
@@ -552,12 +558,13 @@
 
           {/* INFORMASI KUMPULAN AKTIF */}
           {isGS && grp !== 'ALL' && GROUPS[grp] && (
-            <div class="glass border rounded-xl p-3 mb-6 flex flex-wrap gap-4 items-center animate-slideIn" style={{ borderColor: `${GC[grp]}30`, background: `${GC[grp]}05` }}>
+            <div class="glass border rounded-xl p-3 mb-6 flex flex-wrap gap-4 items-center" style={{ borderColor: `${GC[grp]}30`, background: `${GC[grp]}05` }}>
               <span class="text-xs font-black tracking-widest uppercase" style={{ color: GC[grp] }}>KUMPULAN {grp}:</span>
               <div class="flex flex-wrap gap-3">
                 {GROUPS[grp].map(t => (
-                  <span key={t} class={`text-xs font-semibold px-2 py-1 rounded bg-slate-900/80 border border-slate-800 ${favTeams.includes(t) ? 'text-amber-400 border-amber-500/30' : 'text-slate-300'}`}>
-                    {FLAGS[t]} {t}
+                  <span key={t} class={`text-xs font-semibold px-2 py-1 rounded bg-slate-900/80 border border-slate-800 flex items-center gap-1.5 ${favTeams.includes(t) ? 'text-amber-400 border-amber-500/30' : 'text-slate-300'}`}>
+                    <img src={getFlagUrl(t)} alt="" class="w-4 h-2.5 object-cover rounded-sm" />
+                    {t}
                   </span>
                 ))}
               </div>
@@ -575,7 +582,6 @@
                 const isToday = date === todayStr;
                 return (
                   <div key={date} class="relative">
-                    {/* Pembahagi Tarikh */}
                     <div class="flex items-center gap-4 my-4 sticky top-16 z-30 py-2 bg-slate-1000">
                       <div class={`px-4 py-1.5 rounded-full text-xs font-extrabold tracking-wide flex items-center gap-2 ${
                         isToday ? 'bg-red-600 text-white shadow-md shadow-red-600/30' : 'bg-slate-900 text-slate-400 border border-slate-800'
@@ -586,7 +592,6 @@
                       <div class="flex-1 h-[1px] bg-gradient-to-r from-slate-800 via-slate-950 to-transparent"></div>
                     </div>
 
-                    {/* Grid Kad Perlawanan */}
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                       {matches.map(m => isGS ? (
                         <GroupCard 
@@ -606,9 +611,9 @@
           </div>
 
           {/* FOOTER */}
-          <footer class="mt-16 pt-6 border-t border-slate-900 text-center text-[10px] text-slate-600 font-medium tracking-wide leading-relaxed">
+          <footer class="mt-16 pt-6 border-t border-slate-900 text-center text-[10px] text-slate-600 font-medium tracking-wide">
             Semua zon waktu telah diselaraskan ke Waktu Malaysia (MYT - UTC+8). <br />
-            Data rujukan: FIFA / Al Jazeera / ESPN. Sedia untuk kegunaan premium peribadi.
+            Sistem pautan bendera menggunakan FlagCDN Engine High Resolution. Sedia untuk diguna.
           </footer>
 
         </div>
