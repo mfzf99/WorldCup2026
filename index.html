@@ -4,12 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>2026 FIFA World Cup Match Schedule (MYT)</title>
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- React & Babel -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;500;600;700;800&family=JetBrains+Mono:wght=700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@700;800&display=swap');
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
       background-color: #020617;
@@ -111,7 +113,7 @@
       {id:28,g:'A',h:'Mexico',       a:'South Korea',   d:'2026-06-19',t:'09:00',v:'Zapopan'},
       {id:29,g:'D',h:'USA',          a:'Australia',     d:'2026-06-20',t:'03:00',v:'Seattle'},
       {id:30,g:'C',h:'Scotland',     a:'Morocco',       d:'2026-06-20',t:'06:00',v:'Boston'},
-      {id:31,g:'C',h:'Brazil',       a:'Haiti',         d:'2026-06-20',t:'08:30',v:'Philadelphia'},
+      {id:31,g:'C',h:'Brazil',       a:'Haiti',         d:'2026-06-20',t-:'08:30',v:'Philadelphia'},
       {id:32,g:'D',h:'Türkiye',      a:'Paraguay',      d:'2026-06-20',t:'11:00',v:'San Francisco'},
       {id:33,g:'F',h:'Netherlands',  a:'Sweden',        d:'2026-06-21',t:'01:00',v:'Houston'},
       {id:34,g:'E',h:'Germany',      a:'Ivory Coast',   d:'2026-06-21',t:'04:00',v:'Toronto'},
@@ -225,6 +227,7 @@
       return { icon:'🌆', label:'Evening' };
     }
 
+    // Mengambil pautan bendera dari CDN resolusi tinggi
     function getFlagUrl(teamName) {
       if (!teamName) return null;
       const code = FLAG_CODES[teamName];
@@ -389,52 +392,58 @@
       const [favOnly, setFavOnly] = useState(false);
       const [q, setQ] = useState('');
       const [now, setNow] = useState(new Date());
-      
-      // State Simpanan Data API Mentah
-      const [apiGames, setApiGames] = useState([]);
 
       const [favTeams, setFavTeams] = useState(() => {
         const saved = localStorage.getItem('wc2026_fav_teams');
         return saved ? JSON.parse(saved) : [];
       });
 
-      // Fungsi Menggali Data API worldcup26.ir secara berkala
-      const fetchLiveScores = () => {
-        fetch("https://worldcup26.ir/get/games", {
-          method: "GET",
-          headers: {
-            "Authorization": `Bearer ${API_TOKEN}`,
-            "Content-Type": "application/json"
-          }
-        })
-        .then(res => res.json())
-        .then(data => {
-          if (data && data.games) {
-            setApiGames(data.games);
-          }
-        })
-        .catch(err => console.error("API error skipped:", err));
-      };
+      // State pemetaan data API luaran
+      const [apiGamesMap, setApiGamesMap] = useState({});
+
+      // Request data dari API secara berkala (Heartbeat 30 saat)
+      useEffect(() => {
+        function loadApiData() {
+          fetch("https://worldcup26.ir/get/games", {
+            method: "GET",
+            headers: {
+              "Authorization": `Bearer ${API_TOKEN}`,
+              "Content-Type": "application/json"
+            }
+          })
+          .then(res => response.ok ? res.json() : Promise.reject(res))
+          .then(data => {
+            if (data && data.games) {
+              const map = {};
+              data.games.forEach(g => {
+                map[g.id] = g;
+              });
+              setApiGamesMap(map);
+            }
+          })
+          .catch(err => console.error("API Fetch Error:", err));
+        }
+
+        loadApiData();
+        const apiInterval = setInterval(loadApiData, 30000);
+        return () => clearInterval(apiInterval);
+      }, []);
 
       useEffect(() => {
-        fetchLiveScores();
-        const apiInterval = setInterval(fetchLiveScores, 30000); // Hit API setiap 30 saat
-        const timeInterval = setInterval(() => setNow(new Date()), 1000);
-
-        return () => {
-          clearInterval(apiInterval);
-          clearInterval(timeInterval);
-        };
+        const interval = setInterval(() => {
+          setNow(new Date());
+        }, 1000);
+        return () => clearInterval(interval);
       }, []);
 
       useEffect(() => {
         localStorage.setItem('wc2026_fav_teams', JSON.stringify(favTeams));
       }, [favTeams]);
 
-      // Menggabungkan data API Live bersama Array Static Tempatan (Group Stage)
+      // Penggabungan data API Live bersama Array Static Tempatan (Group Stage)
       const liveGSArray = useMemo(() => {
         return GS.map(m => {
-          const matchData = apiGames.find(g => {
+          const matchData = Object.values(apiGamesMap).find(g => {
             if (g.type !== 'group') return false;
             const apiHome = normalizeTeamName(g.home_team_name_en);
             const apiAway = normalizeTeamName(g.away_team_name_en);
@@ -451,12 +460,12 @@
           }
           return m;
         });
-      }, [apiGames]);
+      }, [apiGamesMap]);
 
-      // Menggabungkan data API Live bersama Array Static Tempatan (Knockout Rounds)
+      // Penggabungan data API Live bersama Array Static Tempatan (Knockout Rounds)
       const liveKOArray = useMemo(() => {
         return KO.map(m => {
-          const matchData = apiGames.find(g => g.type !== 'group' && Number(g.id) === m.id);
+          const matchData = apiGamesMap[m.id];
           if (matchData) {
             const resolvedHome = matchData.home_team_name_en && matchData.home_team_id !== "0" ? normalizeTeamName(matchData.home_team_name_en) : null;
             const resolvedAway = matchData.away_team_name_en && matchData.away_team_id !== "0" ? normalizeTeamName(matchData.away_team_name_en) : null;
@@ -472,7 +481,7 @@
           }
           return m;
         });
-      }, [apiGames]);
+      }, [apiGamesMap]);
 
       const toggleFav = (teamA, teamB) => {
         setFavTeams(prev => {
@@ -743,7 +752,8 @@
                           toggleFav={toggleFav}
                         />
                       ) : (
-                        <KoCard key={m.id} now={now} />
+                        /* FIXED: Objek perlawanan 'm={m}' kini berjaya dihantar ke komponen KoCard */
+                        <KoCard key={m.id} m={m} now={now} />
                       ))}
                     </div>
                   </div>
