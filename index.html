@@ -213,6 +213,7 @@
     }
 
     function getFlagUrl(teamName) {
+      if (!teamName) return null;
       const code = FLAG_CODES[teamName];
       if (!code) return null;
       return `https://flagcdn.com/w160/${code}.png`;
@@ -454,20 +455,28 @@
                 </div>
               </div>
 
-              {/* Countdown Widget */}
+              {/* Countdown Widget (Fixed UI Rendering for Knockout TBDs) */}
               {nextMatch && (
                 <div class="bg-slate-950/60 border border-slate-800 p-4 rounded-2xl min-w-[290px] shadow-inner flex flex-col justify-between">
                   <div>
                     <div class="text-[10px] font-bold tracking-widest text-slate-500 uppercase">Next Match</div>
                     <div class="flex items-center gap-2 mt-2.5">
                       <div class="flex items-center gap-1.5 bg-slate-900/90 px-2 py-1 rounded border border-slate-800">
-                        <img src={getFlagUrl(nextMatch.h)} alt="" class="w-4 h-2.5 object-cover rounded-sm shadow-sm" />
-                        <span class="text-[11px] font-bold text-slate-300 max-w-[65px] truncate">{nextMatch.h}</span>
+                        {getFlagUrl(nextMatch.h) ? (
+                          <img src={getFlagUrl(nextMatch.h)} alt="" class="w-4 h-2.5 object-cover rounded-sm shadow-sm" />
+                        ) : (
+                          <span class="text-xs">⚽</span>
+                        )}
+                        <span class="text-[11px] font-bold text-slate-300 max-w-[65px] truncate">{nextMatch.h || 'TBD'}</span>
                       </div>
                       <span class="text-[9px] font-bold text-slate-600">VS</span>
                       <div class="flex items-center gap-1.5 bg-slate-900/90 px-2 py-1 rounded border border-slate-800">
-                        <img src={getFlagUrl(nextMatch.a)} alt="" class="w-4 h-2.5 object-cover rounded-sm shadow-sm" />
-                        <span class="text-[11px] font-bold text-slate-300 max-w-[65px] truncate">{nextMatch.a}</span>
+                        {getFlagUrl(nextMatch.a) ? (
+                          <img src={getFlagUrl(nextMatch.a)} alt="" class="w-4 h-2.5 object-cover rounded-sm shadow-sm" />
+                        ) : (
+                          <span class="text-xs">⚽</span>
+                        )}
+                        <span class="text-[11px] font-bold text-slate-300 max-w-[65px] truncate">{nextMatch.a || 'TBD'}</span>
                       </div>
                     </div>
                   </div>
@@ -640,7 +649,7 @@
             )}
           </div>
 
-          {/* FOOTER - Updated with clean signature */}
+          {/* FOOTER */}
           <footer class="mt-16 pt-6 border-t border-slate-900 text-center text-[10px] text-slate-600 font-medium tracking-wide flex flex-col items-center gap-1.5">
             <span>All match times are configured to Malaysia Time (MYT - UTC+8). Official Tournament Schedule.</span>
             <span class="text-slate-500 font-bold mt-0.5 tracking-wider">©2026 mfzf. All rights reserved.</span>
