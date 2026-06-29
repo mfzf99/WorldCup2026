@@ -1,20 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>2026 FIFA World Cup Match Schedule (MYT)</title>
-  <!-- Tailwind CSS CDN -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>2026 FIFA World Cup Schedule (MYT)</title>
+
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- React & Babel -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+
+  <!-- React & ReactDOM (stable) -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+  <!-- Babel Standalone (untuk transpile JSX) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@700;800&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
       background-color: #020617;
+      color: #e2e8f0;
+      min-height: 100vh;
     }
     .mono { font-family: 'JetBrains Mono', monospace; }
     .glass {
@@ -22,7 +30,6 @@
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
     }
-    /* Custom Scrollbar */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: #020617; }
     ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
@@ -32,12 +39,36 @@
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
-<body class="text-slate-100 min-h-screen">
+<body>
+
+  <!-- Root element -->
   <div id="root"></div>
 
-  <script type="text/babel">
-    const { useState, useMemo, useEffect } = React;
+  <!-- Fallback if React fails -->
+  <noscript>
+    <div style="padding:2rem;text-align:center;color:#94a3b8;">
+      ⚽ JavaScript is required to view the schedule. Please enable it.
+    </div>
+  </noscript>
 
+  <script type="text/babel">
+    // ============================================================
+    //  PASTIKAN React & ReactDOM TELAH DIMUAT
+    // ============================================================
+    if (typeof React === 'undefined' || typeof ReactDOM === 'undefined') {
+      document.getElementById('root').innerHTML = `
+        <div style="padding:2rem;text-align:center;color:#ef4444;">
+          ❌ React gagal dimuat. Sila refresh atau semak sambungan internet.
+        </div>
+      `;
+      throw new Error('React or ReactDOM not loaded');
+    }
+
+    console.log('✅ React loaded successfully');
+
+    // ============================================================
+    //  DATA
+    // ============================================================
     const FLAG_CODES = {
       'Mexico': 'mx', 'South Africa': 'za', 'South Korea': 'kr', 'Czechia': 'cz',
       'Canada': 'ca', 'Bosnia': 'ba', 'Qatar': 'qa', 'Switzerland': 'ch',
@@ -192,6 +223,9 @@
       {id:104,phase:'FINAL', n:1,d:'2026-07-20',t:'03:00',v:'New York / New Jersey'},
     ];
 
+    // ============================================================
+    //  UTILITY FUNCTIONS
+    // ============================================================
     function fmtDate(s) {
       const d = new Date(s + 'T12:00:00');
       return `${DAYS[d.getDay()]}, ${MONTHS[d.getMonth()]} ${d.getDate()} ${d.getFullYear()}`;
@@ -203,7 +237,7 @@
       let h = parseInt(hStr, 10);
       const ampm = h >= 12 ? 'PM' : 'AM';
       h = h % 12;
-      h = h ? h : 12; 
+      h = h ? h : 12;
       return `${h}:${mStr} ${ampm}`;
     }
 
@@ -223,7 +257,7 @@
 
     function getMatchStatus(dateStr, timeStr, now) {
       const matchTime = new Date(`${dateStr}T${timeStr}:00`);
-      const diffMs = now - matchTime; 
+      const diffMs = now - matchTime;
       const diffHours = diffMs / (1000 * 60 * 60);
 
       if (diffHours >= 0 && diffHours <= 2) {
@@ -232,10 +266,9 @@
         return { code: 'TAMAT', label: 'FINISHED', class: 'bg-slate-800 text-slate-400 border border-slate-700' };
       } else {
         const minsLeft = Math.ceil(Math.abs(diffMs) / (1000 * 60));
-        
         if (minsLeft <= 30) {
           return { code: 'AKAN_DATANG', label: `STARTS IN ${minsLeft}M ⏳`, class: 'bg-amber-500/20 text-amber-400 border border-amber-500/50 animate-pulse font-extrabold' };
-        } else if (minsLeft < 1440) { 
+        } else if (minsLeft < 1440) {
           const h = Math.floor(minsLeft / 60);
           const m = minsLeft % 60;
           return { code: 'AKAN_DATANG', label: `STARTS IN ${h}H ${m}M`, class: 'bg-cyan-950 text-cyan-400 border border-cyan-500/30 font-bold' };
@@ -245,14 +278,46 @@
       }
     }
 
-    // ── GROUP CARD ───────────────────────────────────────────────────────────
+    // ============================================================
+    //  REACT COMPONENTS
+    // ============================================================
+
+    // Error Boundary
+    class ErrorBoundary extends React.Component {
+      constructor(props) {
+        super(props);
+        this.state = { hasError: false, error: null };
+      }
+      static getDerivedStateFromError(error) {
+        return { hasError: true, error };
+      }
+      componentDidCatch(error, info) {
+        console.error('❌ React Error:', error, info);
+      }
+      render() {
+        if (this.state.hasError) {
+          return (
+            <div style={{ padding: '2rem', textAlign: 'center', color: '#f87171' }}>
+              <h2>⚠️ Something went wrong</h2>
+              <details style={{ whiteSpace: 'pre-wrap', marginTop: '1rem', color: '#94a3b8' }}>
+                <summary>Error details</summary>
+                {this.state.error && this.state.error.toString()}
+              </details>
+            </div>
+          );
+        }
+        return this.props.children;
+      }
+    }
+
+    // ── GROUP CARD ────────────────────────────────────────────────
     function GroupCard({ m, isFav, toggleFav, now }) {
       const c = GC[m.g] || '#00E8FF';
       const mood = getMood(m.t);
       const status = getMatchStatus(m.d, m.t, now);
-      
+
       return (
-        <div 
+        <div
           className="glass rounded-xl p-4 border transition-all duration-300 hover:-translate-y-1 relative group flex flex-col justify-between"
           style={{ borderColor: `${c}25`, borderTop: `3px solid ${c}` }}
         >
@@ -263,7 +328,7 @@
               </span>
               <div className="flex items-center gap-2">
                 <span className="text-xs text-slate-400">{mood.icon}</span>
-                <button 
+                <button
                   onClick={(e) => { e.stopPropagation(); toggleFav(m.h, m.a); }}
                   className="text-sm focus:outline-none transition-transform active:scale-75"
                 >
@@ -303,7 +368,7 @@
       );
     }
 
-    // ── KNOCKOUT CARD ────────────────────────────────────────────────────────
+    // ── KNOCKOUT CARD ──────────────────────────────────────────────
     function KoCard({ m, now }) {
       const isFinal = m.phase === 'FINAL';
       const isBronze = m.phase === 'BRONZE';
@@ -312,7 +377,7 @@
       const status = getMatchStatus(m.d, m.t, now);
 
       return (
-        <div 
+        <div
           className="glass rounded-xl p-4 border transition-all duration-300 hover:-translate-y-1 relative flex flex-col justify-between"
           style={{ borderColor: `${c}25`, borderTop: `3px solid ${c}`, background: isFinal ? 'linear-gradient(180deg, rgba(245,197,24,0.05) 0%, rgba(15,23,42,0.8) 100%)' : '' }}
         >
@@ -348,7 +413,7 @@
       );
     }
 
-    // ── MAIN APP ─────────────────────────────────────────────────────────────
+    // ── MAIN APP ────────────────────────────────────────────────────
     function App() {
       const [tab, setTab] = useState('GS');
       const [grp, setGrp] = useState('ALL');
@@ -358,17 +423,18 @@
       const [now, setNow] = useState(new Date());
 
       const [favTeams, setFavTeams] = useState(() => {
-        const saved = localStorage.getItem('wc2026_fav_teams');
-        return saved ? JSON.parse(saved) : [];
+        try {
+          const saved = localStorage.getItem('wc2026_fav_teams');
+          return saved ? JSON.parse(saved) : [];
+        } catch {
+          return [];
+        }
       });
 
-      // ─── AUTO-NAVIGATE TO CURRENT STAGE ──────────────────────────────
+      // Auto-navigate to current stage
       useEffect(() => {
         const today = new Date();
-        // Use local date string in YYYY-MM-DD format
         const todayStr = today.toISOString().split('T')[0];
-        
-        // Define stage date ranges (inclusive)
         const stages = [
           { id: 'GS', start: '2026-06-11', end: '2026-06-28' },
           { id: 'R32', start: '2026-06-29', end: '2026-07-04' },
@@ -378,28 +444,25 @@
           { id: 'BRONZE', start: '2026-07-19', end: '2026-07-19' },
           { id: 'FINAL', start: '2026-07-20', end: '2026-07-20' },
         ];
-
-        let currentStage = 'GS'; // default
+        let currentStage = 'GS';
         for (const stage of stages) {
           if (todayStr >= stage.start && todayStr <= stage.end) {
             currentStage = stage.id;
             break;
           }
         }
-        // If after all stages, show FINAL (or keep FINAL)
         if (todayStr > '2026-07-20') currentStage = 'FINAL';
-
         setTab(currentStage);
         setGrp('ALL');
-      }, []); // run only once on mount
+      }, []);
 
+      // Update clock every second
       useEffect(() => {
-        const interval = setInterval(() => {
-          setNow(new Date());
-        }, 1000);
+        const interval = setInterval(() => setNow(new Date()), 1000);
         return () => clearInterval(interval);
       }, []);
 
+      // Persist favourites
       useEffect(() => {
         localStorage.setItem('wc2026_fav_teams', JSON.stringify(favTeams));
       }, [favTeams]);
@@ -465,12 +528,12 @@
 
       return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          
-          {/* ── HEADER HERO ────────────────────────────────── */}
+
+          {/* ── HEADER ────────────────────────────────────────── */}
           <div className="relative rounded-3xl overflow-hidden glass border border-slate-800/80 p-6 sm:p-10 mb-8 shadow-2xl shadow-cyan-950/20">
             <div className="absolute -top-24 -left-20 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
             <div className="absolute -bottom-24 -right-20 w-80 h-80 bg-amber-500/5 rounded-full blur-3xl pointer-events-none"></div>
-            
+
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 relative z-10">
               <div>
                 <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-white mt-1 bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text">
@@ -488,7 +551,7 @@
                 </div>
               </div>
 
-              {/* Countdown Widget */}
+              {/* Next Match Widget */}
               {nextMatch && (
                 <div className="bg-slate-950/60 border border-slate-800 p-4 rounded-2xl min-w-[290px] shadow-inner flex flex-col justify-between">
                   <div>
@@ -531,7 +594,7 @@
             </div>
           </div>
 
-          {/* ── NAVIGATION STICKY ──────────────── */}
+          {/* ── TABS ────────────────────────────────────────────── */}
           <div className="sticky top-4 z-40 bg-slate-950/80 backdrop-blur-md p-3 rounded-2xl border border-slate-800/80 shadow-xl mb-6">
             <div className="flex gap-2 overflow-x-auto pb-2 sm:pb-0 no-scrollbar">
               {TABS.map(t => (
@@ -539,8 +602,8 @@
                   key={t.id}
                   onClick={() => { setTab(t.id); setGrp('ALL'); }}
                   className={`px-4 py-2 rounded-xl text-xs font-extrabold tracking-wide whitespace-nowrap transition-all duration-200 ${
-                    tab === t.id 
-                      ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 shadow-md shadow-amber-500/20 scale-[1.02]' 
+                    tab === t.id
+                      ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 shadow-md shadow-amber-500/20 scale-[1.02]'
                       : 'bg-slate-900/60 text-slate-400 hover:text-white hover:bg-slate-800/60 border border-slate-800/40'
                   }`}
                 >
@@ -550,11 +613,11 @@
             </div>
           </div>
 
-          {/* ── SEARCH & FILTER CONSOLE ───────── */}
+          {/* ── SEARCH & FILTERS ────────────────────────────────── */}
           <div className="glass border border-slate-800/60 rounded-2xl p-4 mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="relative">
-              <input 
-                type="text" 
+              <input
+                type="text"
                 placeholder="Search country, venue city..."
                 value={q}
                 onChange={e => setQ(e.target.value)}
@@ -568,8 +631,8 @@
                   key={status}
                   onClick={() => setStatusFilter(status)}
                   className={`flex-1 py-2 px-1 rounded-xl text-[10px] font-bold border transition-all ${
-                    statusFilter === status 
-                      ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/40' 
+                    statusFilter === status
+                      ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/40'
                       : 'bg-slate-950/40 text-slate-500 border-slate-900 hover:text-slate-300'
                   }`}
                 >
@@ -582,8 +645,8 @@
               <button
                 onClick={() => setFavOnly(!favOnly)}
                 className={`w-full md:w-auto px-4 py-2.5 rounded-xl text-xs font-bold border flex items-center justify-center gap-2 transition-all ${
-                  favOnly 
-                    ? 'bg-amber-400/10 text-amber-400 border-amber-400/30' 
+                  favOnly
+                    ? 'bg-amber-400/10 text-amber-400 border-amber-400/30'
                     : 'bg-slate-950/40 text-slate-500 border-slate-900 hover:text-slate-400'
                 }`}
               >
@@ -593,7 +656,7 @@
             </div>
           </div>
 
-          {/* GROUP CHIPS */}
+          {/* ── GROUP CHIPS ──────────────────────────────────────── */}
           {isGS && (
             <div className="flex gap-1.5 overflow-x-auto pb-4 no-scrollbar">
               <button
@@ -619,7 +682,7 @@
             </div>
           )}
 
-          {/* ACTIVE GROUP INFO STRIP */}
+          {/* ── GROUP INFO STRIP ────────────────────────────────── */}
           {isGS && grp !== 'ALL' && GROUPS[grp] && (
             <div className="glass border rounded-xl p-3 mb-6 flex flex-wrap gap-4 items-center" style={{ borderColor: `${GC[grp]}30`, background: `${GC[grp]}05` }}>
               <span className="text-xs font-black tracking-widest uppercase" style={{ color: GC[grp] }}>GROUP {grp}:</span>
@@ -634,7 +697,7 @@
             </div>
           )}
 
-          {/* ── MATCH LIST ────────────────────── */}
+          {/* ── MATCH LIST ──────────────────────────────────────── */}
           <div className="space-y-8">
             {groupedByDate.length === 0 ? (
               <div className="text-center text-slate-600 py-16 text-sm font-medium border border-dashed border-slate-900 rounded-2xl">
@@ -657,15 +720,15 @@
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                       {matches.map(m => isGS ? (
-                        <GroupCard 
-                          key={m.id} 
-                          m={m} 
+                        <GroupCard
+                          key={m.id}
+                          m={m}
                           now={now}
-                          isFav={favTeams.includes(m.h) || favTeams.includes(m.a)} 
+                          isFav={favTeams.includes(m.h) || favTeams.includes(m.a)}
                           toggleFav={toggleFav}
                         />
                       ) : (
-                        <KoCard key={m.id} now={now} />
+                        <KoCard key={m.id} m={m} now={now} />
                       ))}
                     </div>
                   </div>
@@ -674,18 +737,50 @@
             )}
           </div>
 
-          {/* FOOTER - Updated with clean signature */}
+          {/* ── FOOTER ───────────────────────────────────────────── */}
           <footer className="mt-16 pt-6 border-t border-slate-900 text-center text-[10px] text-slate-600 font-medium tracking-wide flex flex-col items-center gap-1.5">
             <span>All match times are configured to Malaysia Time (MYT - UTC+8). Official Tournament Schedule.</span>
             <span className="text-slate-500 font-bold mt-0.5 tracking-wider">©2026 mfzf. All rights reserved.</span>
           </footer>
-
         </div>
       );
     }
 
-    const root = ReactDOM.createRoot(document.getElementById("root"));
-    root.render(React.createElement(App));
+    // ============================================================
+    //  RENDER WITH ERROR BOUNDARY
+    // ============================================================
+    try {
+      const rootElement = document.getElementById('root');
+      if (!rootElement) throw new Error('Root element not found');
+
+      // Use createRoot if available, else fallback to render
+      if (ReactDOM.createRoot) {
+        const root = ReactDOM.createRoot(rootElement);
+        root.render(
+          React.createElement(ErrorBoundary, null,
+            React.createElement(App)
+          )
+        );
+        console.log('✅ React 18 createRoot rendered');
+      } else {
+        ReactDOM.render(
+          React.createElement(ErrorBoundary, null,
+            React.createElement(App)
+          ),
+          rootElement
+        );
+        console.log('✅ ReactDOM.render (legacy) rendered');
+      }
+    } catch (err) {
+      console.error('❌ Fatal render error:', err);
+      document.getElementById('root').innerHTML = `
+        <div style="padding:2rem;text-align:center;color:#ef4444;background:#0f172a;border-radius:1rem;margin:2rem;">
+          <h2>❌ Failed to render</h2>
+          <p style="color:#94a3b8;margin-top:0.5rem;">${err.toString()}</p>
+          <p style="color:#64748b;font-size:0.8rem;margin-top:1rem;">Please check console for details.</p>
+        </div>
+      `;
+    }
   </script>
 </body>
 </html>
