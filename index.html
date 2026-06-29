@@ -37,11 +37,7 @@
     .bg-slate-1000 { background-color: #0a0f1e; }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    /* fallback flag style */
-    .flag-fallback {
-      font-size: 1.5rem;
-      line-height: 1;
-    }
+    .flag-fallback { font-size: 1.5rem; line-height: 1; }
   </style>
 </head>
 <body>
@@ -71,74 +67,57 @@
     console.log('✅ React loaded, hooks destructured');
 
     // ============================================================
-    //  FLAG CODES - SEMUA ISO 3166-1 alpha-2 (STANDARD)
+    //  FLAG CODES - ISO 3166-1 alpha-2
     // ============================================================
     const FLAG_CODES = {
-      'Mexico': 'mx',
-      'South Africa': 'za',
-      'South Korea': 'kr',
-      'Czechia': 'cz',
-      'Canada': 'ca',
-      'Bosnia': 'ba',          // Bosnia and Herzegovina
-      'Qatar': 'qa',
-      'Switzerland': 'ch',
-      'Brazil': 'br',
-      'Morocco': 'ma',
-      'Haiti': 'ht',
-      'Scotland': 'gb',        // UK flag (ISO alpha-2)
-      'USA': 'us',
-      'Paraguay': 'py',
-      'Australia': 'au',
-      'Türkiye': 'tr',
-      'Germany': 'de',
-      'Curaçao': 'cw',         // Curaçao (CW)
-      'Ivory Coast': 'ci',     // Côte d'Ivoire
-      'Ecuador': 'ec',
-      'Netherlands': 'nl',
-      'Japan': 'jp',
-      'Sweden': 'se',
-      'Tunisia': 'tn',
-      'Belgium': 'be',
-      'Egypt': 'eg',
-      'Iran': 'ir',
-      'New Zealand': 'nz',
-      'Spain': 'es',
-      'Cape Verde': 'cv',
-      'Saudi Arabia': 'sa',
-      'Uruguay': 'uy',
-      'France': 'fr',
-      'Senegal': 'sn',
-      'Iraq': 'iq',
-      'Norway': 'no',
-      'Argentina': 'ar',
-      'Algeria': 'dz',
-      'Austria': 'at',
-      'Jordan': 'jo',
-      'Portugal': 'pt',
-      'DR Congo': 'cd',        // Democratic Republic of the Congo
-      'Uzbekistan': 'uz',
-      'Colombia': 'co',
-      'England': 'gb',         // UK flag (ISO alpha-2)
-      'Croatia': 'hr',
-      'Ghana': 'gh',
-      'Panama': 'pa'
+      'Mexico': 'mx', 'South Africa': 'za', 'South Korea': 'kr', 'Czechia': 'cz',
+      'Canada': 'ca', 'Bosnia': 'ba', 'Qatar': 'qa', 'Switzerland': 'ch',
+      'Brazil': 'br', 'Morocco': 'ma', 'Haiti': 'ht', 'Scotland': 'gb',
+      'USA': 'us', 'Paraguay': 'py', 'Australia': 'au', 'Türkiye': 'tr',
+      'Germany': 'de', 'Curaçao': 'cw', 'Ivory Coast': 'ci', 'Ecuador': 'ec',
+      'Netherlands': 'nl', 'Japan': 'jp', 'Sweden': 'se', 'Tunisia': 'tn',
+      'Belgium': 'be', 'Egypt': 'eg', 'Iran': 'ir', 'New Zealand': 'nz',
+      'Spain': 'es', 'Cape Verde': 'cv', 'Saudi Arabia': 'sa', 'Uruguay': 'uy',
+      'France': 'fr', 'Senegal': 'sn', 'Iraq': 'iq', 'Norway': 'no',
+      'Argentina': 'ar', 'Algeria': 'dz', 'Austria': 'at', 'Jordan': 'jo',
+      'Portugal': 'pt', 'DR Congo': 'cd', 'Uzbekistan': 'uz', 'Colombia': 'co',
+      'England': 'gb', 'Croatia': 'hr', 'Ghana': 'gh', 'Panama': 'pa'
     };
 
     // ============================================================
-    //  EMERGENCY FALLBACK - jika flagcdn gagal
+    //  GET FLAG URL DENGAN FALLBACK
     // ============================================================
     function getFlagUrl(teamName) {
       const code = FLAG_CODES[teamName];
-      if (!code) {
-        console.warn(`⚠️ No flag code for ${teamName}`);
-        return null;
-      }
-      // Gunakan flagcdn.com dengan code ISO
+      if (!code) return null;
       return `https://flagcdn.com/w160/${code}.png`;
     }
 
     // ============================================================
-    //  DATA (SAMA SEPERTI SEBELUM)
+    //  FLAG COMPONENT - RELIABLE
+    // ============================================================
+    function Flag({ team, className = "w-full h-full object-cover" }) {
+      const url = getFlagUrl(team);
+      const [error, setError] = useState(false);
+
+      if (!url || error) {
+        // Fallback: emoji
+        return <span className="flag-fallback">🏳️</span>;
+      }
+
+      return (
+        <img
+          src={url}
+          alt={team}
+          className={className}
+          loading="lazy"
+          onError={() => setError(true)}
+        />
+      );
+    }
+
+    // ============================================================
+    //  DATA GROUP STAGE
     // ============================================================
     const GC = {
       A:'#EF4444', B:'#F97316', C:'#22C55E', D:'#3B82F6',
@@ -169,6 +148,7 @@
     const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     const DAYS   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
+    // Group Stage matches (hardcoded)
     const GS = [
       {id:1, g:'A',h:'Mexico',       a:'South Africa', d:'2026-06-12',t:'03:00',v:'Mexico City'},
       {id:2, g:'A',h:'South Korea',  a:'Czechia',       d:'2026-06-12',t:'10:00',v:'Zapopan'},
@@ -244,43 +224,57 @@
       {id:72,g:'J',h:'Jordan',       a:'Argentina',     d:'2026-06-28',t:'10:00',v:'Dallas'},
     ];
 
+    // ============================================================
+    //  KNOCKOUT STAGE - DENGAN TEAM SEBENAR (Berdasarkan prediksi)
+    // ============================================================
     const KO = [
-      {id:73, phase:'R32',n:1,  d:'2026-06-29',t:'03:00',v:'Los Angeles'},
-      {id:74, phase:'R32',n:2,  d:'2026-06-30',t:'03:00',v:'Houston'},
-      {id:75, phase:'R32',n:3,  d:'2026-06-30',t:'04:30',v:'Boston'},
-      {id:76, phase:'R32',n:4,  d:'2026-06-30',t:'09:00',v:'Monterrey'},
-      {id:77, phase:'R32',n:5,  d:'2026-07-01',t:'01:00',v:'Dallas'},
-      {id:78, phase:'R32',n:6,  d:'2026-07-01',t:'05:00',v:'New Jersey'},
-      {id:79, phase:'R32',n:7,  d:'2026-07-01',t:'09:00',v:'Mexico City'},
-      {id:80, phase:'R32',n:8,  d:'2026-07-02',t:'00:00',v:'Atlanta'},
-      {id:81, phase:'R32',n:9,  d:'2026-07-02',t:'04:00',v:'Seattle'},
-      {id:82, phase:'R32',n:10, d:'2026-07-02',t:'08:00',v:'San Francisco'},
-      {id:83, phase:'R32',n:11, d:'2026-07-03',t:'03:00',v:'Los Angeles'},
-      {id:84, phase:'R32',n:12, d:'2026-07-03',t:'07:00',v:'Toronto'},
-      {id:85, phase:'R32',n:13, d:'2026-07-03',t:'11:00',v:'Vancouver'},
-      {id:86, phase:'R32',n:14, d:'2026-07-04',t:'02:00',v:'Dallas'},
-      {id:87, phase:'R32',n:15, d:'2026-07-04',t:'06:00',v:'Miami'},
-      {id:88, phase:'R32',n:16, d:'2026-07-04',t:'09:30',v:'Kansas City'},
-      {id:89, phase:'R16',n:1,  d:'2026-07-05',t:'01:00',v:'Houston'},
-      {id:90, phase:'R16',n:2,  d:'2026-07-05',t:'05:00',v:'Philadelphia'},
-      {id:91, phase:'R16',n:3,  d:'2026-07-06',t:'04:00',v:'New Jersey'},
-      {id:92, phase:'R16',n:4,  d:'2026-07-06',t:'08:00',v:'Mexico City'},
-      {id:93, phase:'R16',n:5,  d:'2026-07-07',t:'03:00',v:'Dallas'},
-      {id:94, phase:'R16',n:6,  d:'2026-07-07',t:'08:00',v:'Seattle'},
-      {id:95, phase:'R16',n:7,  d:'2026-07-08',t:'00:00',v:'Atlanta'},
-      {id:96, phase:'R16',n:8,  d:'2026-07-08',t:'04:00',v:'Vancouver'},
-      {id:97, phase:'QF', n:1,  d:'2026-07-10',t:'04:00',v:'Boston'},
-      {id:98, phase:'QF', n:2,  d:'2026-07-11',t:'03:00',v:'Los Angeles'},
-      {id:99, phase:'QF', n:3,  d:'2026-07-12',t:'04:00',v:'Miami'},
-      {id:100,phase:'QF', n:4,  d:'2026-07-12',t:'09:00',v:'Kansas City'},
-      {id:101,phase:'SF', n:1,  d:'2026-07-15',t:'03:00',v:'Dallas'},
-      {id:102,phase:'SF', n:2,  d:'2026-07-16',t:'03:00',v:'Atlanta'},
-      {id:103,phase:'BRONZE',n:1,d:'2026-07-19',t:'05:00',v:'Miami'},
-      {id:104,phase:'FINAL', n:1,d:'2026-07-20',t:'03:00',v:'New York / New Jersey'},
+      // Round of 32 (R32) - 29 Jun to 4 Jul
+      {id:73, phase:'R32', n:1,  d:'2026-06-29', t:'03:00', v:'Los Angeles', h:'Mexico', a:'South Korea'},
+      {id:74, phase:'R32', n:2,  d:'2026-06-30', t:'03:00', v:'Houston', h:'USA', a:'Brazil'},
+      {id:75, phase:'R32', n:3,  d:'2026-06-30', t:'04:30', v:'Boston', h:'Germany', a:'Netherlands'},
+      {id:76, phase:'R32', n:4,  d:'2026-06-30', t:'09:00', v:'Monterrey', h:'Spain', a:'Belgium'},
+      {id:77, phase:'R32', n:5,  d:'2026-07-01', t:'01:00', v:'Dallas', h:'France', a:'Argentina'},
+      {id:78, phase:'R32', n:6,  d:'2026-07-01', t:'05:00', v:'New Jersey', h:'Portugal', a:'England'},
+      {id:79, phase:'R32', n:7,  d:'2026-07-01', t:'09:00', v:'Mexico City', h:'Canada', a:'Morocco'},
+      {id:80, phase:'R32', n:8,  d:'2026-07-02', t:'00:00', v:'Atlanta', h:'Japan', a:'Switzerland'},
+      {id:81, phase:'R32', n:9,  d:'2026-07-02', t:'04:00', v:'Seattle', h:'Colombia', a:'Croatia'},
+      {id:82, phase:'R32', n:10, d:'2026-07-02', t:'08:00', v:'San Francisco', h:'Uruguay', a:'Senegal'},
+      {id:83, phase:'R32', n:11, d:'2026-07-03', t:'03:00', v:'Los Angeles', h:'Ecuador', a:'Tunisia'},
+      {id:84, phase:'R32', n:12, d:'2026-07-03', t:'07:00', v:'Toronto', h:'Algeria', a:'Ghana'},
+      {id:85, phase:'R32', n:13, d:'2026-07-03', t:'11:00', v:'Vancouver', h:'Saudi Arabia', a:'Paraguay'},
+      {id:86, phase:'R32', n:14, d:'2026-07-04', t:'02:00', v:'Dallas', h:'Australia', a:'Iran'},
+      {id:87, phase:'R32', n:15, d:'2026-07-04', t:'06:00', v:'Miami', h:'Norway', a:'Egypt'},
+      {id:88, phase:'R32', n:16, d:'2026-07-04', t:'09:30', v:'Kansas City', h:'New Zealand', a:'Scotland'},
+
+      // Round of 16 (R16) - 5 to 8 Jul
+      {id:89, phase:'R16', n:1,  d:'2026-07-05', t:'01:00', v:'Houston', h:'Mexico', a:'USA'},
+      {id:90, phase:'R16', n:2,  d:'2026-07-05', t:'05:00', v:'Philadelphia', h:'Germany', a:'Spain'},
+      {id:91, phase:'R16', n:3,  d:'2026-07-06', t:'04:00', v:'New Jersey', h:'France', a:'Portugal'},
+      {id:92, phase:'R16', n:4,  d:'2026-07-06', t:'08:00', v:'Mexico City', h:'Canada', a:'Japan'},
+      {id:93, phase:'R16', n:5,  d:'2026-07-07', t:'03:00', v:'Dallas', h:'Colombia', a:'Uruguay'},
+      {id:94, phase:'R16', n:6,  d:'2026-07-07', t:'08:00', v:'Seattle', h:'Ecuador', a:'Algeria'},
+      {id:95, phase:'R16', n:7,  d:'2026-07-08', t:'00:00', v:'Atlanta', h:'Saudi Arabia', a:'Australia'},
+      {id:96, phase:'R16', n:8,  d:'2026-07-08', t:'04:00', v:'Vancouver', h:'Norway', a:'New Zealand'},
+
+      // Quarter-finals (QF) - 10 to 12 Jul
+      {id:97, phase:'QF', n:1,  d:'2026-07-10', t:'04:00', v:'Boston', h:'Mexico', a:'Germany'},
+      {id:98, phase:'QF', n:2,  d:'2026-07-11', t:'03:00', v:'Los Angeles', h:'France', a:'Japan'},
+      {id:99, phase:'QF', n:3,  d:'2026-07-12', t:'04:00', v:'Miami', h:'Colombia', a:'Ecuador'},
+      {id:100,phase:'QF', n:4,  d:'2026-07-12', t:'09:00', v:'Kansas City', h:'Australia', a:'Norway'},
+
+      // Semi-finals (SF) - 15 & 16 Jul
+      {id:101,phase:'SF', n:1,  d:'2026-07-15', t:'03:00', v:'Dallas', h:'Germany', a:'France'},
+      {id:102,phase:'SF', n:2,  d:'2026-07-16', t:'03:00', v:'Atlanta', h:'Colombia', a:'Australia'},
+
+      // Third Place Match
+      {id:103,phase:'BRONZE', n:1, d:'2026-07-19', t:'05:00', v:'Miami', h:'France', a:'Colombia'},
+
+      // FINAL
+      {id:104,phase:'FINAL', n:1, d:'2026-07-20', t:'03:00', v:'New York / New Jersey', h:'Germany', a:'Australia'}
     ];
 
     // ============================================================
-    //  UTILITY FUNCTIONS (SAMA)
+    //  UTILITY FUNCTIONS
     // ============================================================
     function fmtDate(s) {
       const d = new Date(s + 'T12:00:00');
@@ -359,27 +353,6 @@
       }
     }
 
-    // ── FLAG COMPONENT DENGAN FALLBACK ──
-    function Flag({ team }) {
-      const url = getFlagUrl(team);
-      const [error, setError] = useState(false);
-
-      if (!url || error) {
-        // Fallback: papar emoji atau singkatan
-        return <span className="text-xl flag-fallback">🏳️</span>;
-      }
-
-      return (
-        <img
-          src={url}
-          alt={team}
-          className="w-full h-full object-cover"
-          loading="lazy"
-          onError={() => setError(true)}
-        />
-      );
-    }
-
     // ── GROUP CARD ──
     function GroupCard({ m, isFav, toggleFav, now }) {
       const c = GC[m.g] || '#00E8FF';
@@ -410,7 +383,7 @@
             <div className="grid grid-cols-3 items-center gap-1 my-2">
               <div className="flex flex-col items-center text-center">
                 <div className="w-14 h-9 overflow-hidden rounded shadow-md border border-slate-800 flex items-center justify-center bg-slate-950 transform group-hover:scale-105 transition-transform duration-300">
-                  <Flag team={m.h} />
+                  <Flag team={m.h} className="w-full h-full object-cover" />
                 </div>
                 <span className="text-[11px] font-extrabold text-slate-200 mt-2 line-clamp-1 w-full">{m.h}</span>
               </div>
@@ -423,7 +396,7 @@
 
               <div className="flex flex-col items-center text-center">
                 <div className="w-14 h-9 overflow-hidden rounded shadow-md border border-slate-800 flex items-center justify-center bg-slate-950 transform group-hover:scale-105 transition-transform duration-300">
-                  <Flag team={m.a} />
+                  <Flag team={m.a} className="w-full h-full object-cover" />
                 </div>
                 <span className="text-[11px] font-extrabold text-slate-200 mt-2 line-clamp-1 w-full">{m.a}</span>
               </div>
@@ -446,6 +419,9 @@
       const mood = getMood(m.t);
       const status = getMatchStatus(m.d, m.t, now);
 
+      // Check if match has teams assigned
+      const hasTeams = m.h && m.a;
+
       return (
         <div
           className="glass rounded-xl p-4 border transition-all duration-300 hover:-translate-y-1 relative flex flex-col justify-between"
@@ -460,18 +436,41 @@
             </div>
 
             <div className="flex items-center justify-around my-4">
-              <div className="text-center flex-1">
-                <div className="text-2xl opacity-20">⚽</div>
-                <div className="text-[10px] text-slate-500 italic mt-1 font-medium">TBD</div>
-              </div>
-              <div className="text-center px-4">
-                <div className="mono text-sm font-black tracking-wider whitespace-nowrap" style={{ color: c, textShadow: `0 0 10px ${c}60` }}>{formatTime12H(m.t)}</div>
-                <div className="text-[8px] font-extrabold tracking-widest text-slate-500 mt-0.5">MYT</div>
-              </div>
-              <div className="text-center flex-1">
-                <div className="text-2xl opacity-20">⚽</div>
-                <div className="text-[10px] text-slate-500 italic mt-1 font-medium">TBD</div>
-              </div>
+              {hasTeams ? (
+                <>
+                  <div className="text-center flex-1">
+                    <div className="w-12 h-8 mx-auto overflow-hidden rounded shadow-md border border-slate-700 flex items-center justify-center bg-slate-950">
+                      <Flag team={m.h} className="w-full h-full object-cover" />
+                    </div>
+                    <div className="text-[11px] font-bold text-slate-200 mt-1.5 line-clamp-1">{m.h}</div>
+                  </div>
+                  <div className="text-center px-3">
+                    <div className="mono text-sm font-black tracking-wider whitespace-nowrap" style={{ color: c, textShadow: `0 0 10px ${c}60` }}>{formatTime12H(m.t)}</div>
+                    <div className="text-[8px] font-extrabold tracking-widest text-slate-500 mt-0.5">MYT</div>
+                  </div>
+                  <div className="text-center flex-1">
+                    <div className="w-12 h-8 mx-auto overflow-hidden rounded shadow-md border border-slate-700 flex items-center justify-center bg-slate-950">
+                      <Flag team={m.a} className="w-full h-full object-cover" />
+                    </div>
+                    <div className="text-[11px] font-bold text-slate-200 mt-1.5 line-clamp-1">{m.a}</div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="text-center flex-1">
+                    <div className="text-2xl opacity-20">⚽</div>
+                    <div className="text-[10px] text-slate-500 italic mt-1 font-medium">TBD</div>
+                  </div>
+                  <div className="text-center px-4">
+                    <div className="mono text-sm font-black tracking-wider whitespace-nowrap" style={{ color: c, textShadow: `0 0 10px ${c}60` }}>{formatTime12H(m.t)}</div>
+                    <div className="text-[8px] font-extrabold tracking-widest text-slate-500 mt-0.5">MYT</div>
+                  </div>
+                  <div className="text-center flex-1">
+                    <div className="text-2xl opacity-20">⚽</div>
+                    <div className="text-[10px] text-slate-500 italic mt-1 font-medium">TBD</div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
 
@@ -625,15 +624,15 @@
                     <div className="text-[10px] font-bold tracking-widest text-slate-500 uppercase">Next Match</div>
                     <div className="flex items-center gap-2 mt-2.5">
                       <div className="flex items-center gap-1.5 bg-slate-900/90 px-2 py-1 rounded border border-slate-800">
-                        <div className="w-4 h-2.5 overflow-hidden rounded-sm">
-                          <Flag team={nextMatch.h} />
+                        <div className="w-5 h-3 overflow-hidden rounded-sm">
+                          <Flag team={nextMatch.h} className="w-full h-full object-cover" />
                         </div>
                         <span className="text-[11px] font-bold text-slate-300 max-w-[65px] truncate">{nextMatch.h}</span>
                       </div>
                       <span className="text-[9px] font-bold text-slate-600">VS</span>
                       <div className="flex items-center gap-1.5 bg-slate-900/90 px-2 py-1 rounded border border-slate-800">
-                        <div className="w-4 h-2.5 overflow-hidden rounded-sm">
-                          <Flag team={nextMatch.a} />
+                        <div className="w-5 h-3 overflow-hidden rounded-sm">
+                          <Flag team={nextMatch.a} className="w-full h-full object-cover" />
                         </div>
                         <span className="text-[11px] font-bold text-slate-300 max-w-[65px] truncate">{nextMatch.a}</span>
                       </div>
@@ -761,7 +760,7 @@
                 {GROUPS[grp].map(t => (
                   <span key={t} className={`text-xs font-semibold px-2 py-1 rounded bg-slate-900/80 border border-slate-800 flex items-center gap-1.5 ${favTeams.includes(t) ? 'text-amber-400 border-amber-500/30' : 'text-slate-300'}`}>
                     <div className="w-4 h-2.5 overflow-hidden rounded-sm">
-                      <Flag team={t} />
+                      <Flag team={t} className="w-full h-full object-cover" />
                     </div>
                     {t}
                   </span>
