@@ -12,7 +12,7 @@
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 
-  <!-- Babel Standalone (untuk transpile JSX) -->
+  <!-- Babel Standalone -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
 
   <style>
@@ -41,10 +41,8 @@
 </head>
 <body>
 
-  <!-- Root element -->
   <div id="root"></div>
 
-  <!-- Fallback if React fails -->
   <noscript>
     <div style="padding:2rem;text-align:center;color:#94a3b8;">
       ⚽ JavaScript is required to view the schedule. Please enable it.
@@ -64,7 +62,12 @@
       throw new Error('React or ReactDOM not loaded');
     }
 
-    console.log('✅ React loaded successfully');
+    // ============================================================
+    //  HOOKS DESTRUCTURING - INI YANG PALING PENTING!
+    // ============================================================
+    const { useState, useEffect, useMemo } = React;
+
+    console.log('✅ React loaded, hooks destructured');
 
     // ============================================================
     //  DATA
@@ -753,22 +756,12 @@
       const rootElement = document.getElementById('root');
       if (!rootElement) throw new Error('Root element not found');
 
-      // Use createRoot if available, else fallback to render
       if (ReactDOM.createRoot) {
         const root = ReactDOM.createRoot(rootElement);
-        root.render(
-          React.createElement(ErrorBoundary, null,
-            React.createElement(App)
-          )
-        );
+        root.render(React.createElement(ErrorBoundary, null, React.createElement(App)));
         console.log('✅ React 18 createRoot rendered');
       } else {
-        ReactDOM.render(
-          React.createElement(ErrorBoundary, null,
-            React.createElement(App)
-          ),
-          rootElement
-        );
+        ReactDOM.render(React.createElement(ErrorBoundary, null, React.createElement(App)), rootElement);
         console.log('✅ ReactDOM.render (legacy) rendered');
       }
     } catch (err) {
