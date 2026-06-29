@@ -4,14 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>2026 FIFA World Cup Match Schedule (MYT)</title>
-  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- React & Babel -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght=700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;500;600;700;800&family=JetBrains+Mono:wght=700;800&display=swap');
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
       background-color: #020617;
@@ -82,7 +80,7 @@
     const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     const DAYS   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
-    // Global Safe Helper Functions (Diisytiharkan awal untuk elak ReferenceError)
+    // Global Safe Helper Functions 
     function normalizeTeamName(name) {
       if (!name) return '';
       const mapping = {
@@ -97,36 +95,6 @@
       const code = FLAG_CODES[teamName];
       if (!code) return null;
       return `https://flagcdn.com/w160/${code}.png`;
-    }
-
-    function convertApiToMyt(apiDateStr) {
-      if (!apiDateStr) return null;
-      const parts = apiDateStr.split(' ');
-      if (parts.length < 2) return null;
-      const dateParts = parts[0].split('/');
-      const timeParts = parts[1].split(':');
-      if (dateParts.length < 3 || timeParts.length < 2) return null;
-
-      const month = parseInt(dateParts[0], 10) - 1;
-      const day = parseInt(dateParts[1], 10);
-      const year = parseInt(dateParts[2], 10);
-      const hour = parseInt(timeParts[0], 10);
-      const minute = parseInt(timeParts[1], 10);
-
-      const matchDateObj = new Date(year, month, day, hour, minute);
-      // API secara konsisten menggunakan EDT (UTC-4). Malaysia pula UTC+8. Jarak masa tetap adalah +12 Jam.
-      matchDateObj.setHours(matchDateObj.getHours() + 12);
-
-      const mytYear = matchDateObj.getFullYear();
-      const mytMonth = String(matchDateObj.getMonth() + 1).padStart(2, '0');
-      const mytDay = String(matchDateObj.getDate()).padStart(2, '0');
-      const mytHour = String(matchDateObj.getHours()).padStart(2, '0');
-      const mytMin = String(matchDateObj.getMinutes()).padStart(2, '0');
-
-      return {
-        date: `${mytYear}-${mytMonth}-${mytDay}`,
-        time: `${mytHour}:${mytMin}`
-      };
     }
 
     function fmtDate(s) {
@@ -152,36 +120,7 @@
       return { icon:'🌆', label:'Evening' };
     }
 
-    function getMatchStatus(m, now) {
-      if (m.api_finished) {
-        return { code: 'TAMAT', label: 'FINISHED', class: 'bg-slate-800 text-slate-400 border border-slate-700 font-bold' };
-      }
-      if (m.api_live) {
-        return { code: 'LIVE', label: 'LIVE 🔥', class: 'bg-red-500 text-white animate-pulse shadow-lg shadow-red-500/50 font-black' };
-      }
-
-      const matchTime = new Date(`${m.d}T${m.t}:00`);
-      const diffMs = now - matchTime; 
-      const diffHours = diffMs / (1000 * 60 * 60);
-
-      if (diffHours >= 0 && diffHours <= 2) {
-        return { code: 'LIVE', label: 'LIVE 🔥', class: 'bg-red-500 text-white animate-pulse shadow-lg shadow-red-500/50 font-black' };
-      } else if (diffHours > 2) {
-        return { code: 'TAMAT', label: 'FINISHED', class: 'bg-slate-800 text-slate-400 border border-slate-700' };
-      } else {
-        const minsLeft = Math.ceil(Math.abs(diffMs) / (1000 * 60));
-        if (minsLeft <= 30) {
-          return { code: 'AKAN_DATANG', label: `STARTS IN ${minsLeft}M ⏳`, class: 'bg-amber-500/20 text-amber-400 border border-amber-500/50 animate-pulse font-extrabold' };
-        } else if (minsLeft < 1440) { 
-          const h = Math.floor(minsLeft / 60);
-          const m = minsLeft % 60;
-          return { code: 'AKAN_DATANG', label: `STARTS IN ${h}H ${m}M`, class: 'bg-cyan-950 text-cyan-400 border border-cyan-500/30 font-bold' };
-        } else {
-          return { code: 'AKAN_DATANG', label: 'UPCOMING', class: 'bg-slate-900 text-slate-500 border border-slate-800' };
-        }
-      }
-    }
-
+    // 72 Data Perlawanan Kumpulan (Masa MYT Asal Kekal Stabil)
     const GS = [
       {id:1, g:'A',h:'Mexico',       a:'South Africa', d:'2026-06-12',t:'03:00',v:'Mexico City'},
       {id:2, g:'A',h:'South Korea',  a:'Czechia',       d:'2026-06-12',t:'10:00',v:'Zapopan'},
@@ -257,11 +196,12 @@
       {id:72,g:'J',h:'Jordan',       a:'Argentina',     d:'2026-06-28',t:'10:00',v:'Dallas'},
     ];
 
+    // 32 Data Peringkat Kalah Mati (Diselaraskan Tepat Ikut Waktu Siaran Rasmi Google & Livescore)
     const KO = [
       {id:73, phase:'R32',n:1,  d:'2026-06-29',t:'03:00',v:'Los Angeles'},
-      {id:74, phase:'R32',n:2,  d:'2026-06-30',t:'03:00',v:'Houston'},
-      {id:75, phase:'R32',n:3,  d:'2026-06-30',t:'04:30',v:'Boston'},
-      {id:76, phase:'R32',n:4,  d:'2026-06-30',t:'09:00',v:'Monterrey'},
+      {id:74, phase:'R32',n:2,  d:'2026-06-30',t:'04:00',v:'Houston'},
+      {id:75, phase:'R32',n:3,  d:'2026-06-30',t:'09:00',v:'Boston'},
+      {id:76, phase:'R32',n:4,  d:'2026-06-30',t:'01:00',v:'Monterrey'},
       {id:77, phase:'R32',n:5,  d:'2026-07-01',t:'01:00',v:'Dallas'},
       {id:78, phase:'R32',n:6,  d:'2026-07-01',t:'05:00',v:'New Jersey'},
       {id:79, phase:'R32',n:7,  d:'2026-07-01',t:'09:00',v:'Mexico City'},
@@ -292,7 +232,37 @@
       {id:104,phase:'FINAL', n:1,d:'2026-07-20',t:'03:00',v:'New York / New Jersey'},
     ];
 
-    // ── KUMPULAN CARD (GROUP STAGE) ───────────────────────────────────────────
+    function getMatchStatus(m, now) {
+      if (m.api_finished) {
+        return { code: 'TAMAT', label: 'FINISHED', class: 'bg-slate-800 text-slate-400 border border-slate-700 font-bold' };
+      }
+      if (m.api_live) {
+        return { code: 'LIVE', label: 'LIVE 🔥', class: 'bg-red-500 text-white animate-pulse shadow-lg shadow-red-500/50 font-black' };
+      }
+
+      const matchTime = new Date(`${m.d}T${m.t}:00`);
+      const diffMs = now - matchTime; 
+      const diffHours = diffMs / (1000 * 60 * 60);
+
+      if (diffHours >= 0 && diffHours <= 2) {
+        return { code: 'LIVE', label: 'LIVE 🔥', class: 'bg-red-500 text-white animate-pulse shadow-lg shadow-red-500/50 font-black' };
+      } else if (diffHours > 2) {
+        return { code: 'TAMAT', label: 'FINISHED', class: 'bg-slate-800 text-slate-400 border border-slate-700' };
+      } else {
+        const minsLeft = Math.ceil(Math.abs(diffMs) / (1000 * 60));
+        if (minsLeft <= 30) {
+          return { code: 'AKAN_DATANG', label: `STARTS IN ${minsLeft}M ⏳`, class: 'bg-amber-500/20 text-amber-400 border border-amber-500/50 animate-pulse font-extrabold' };
+        } else if (minsLeft < 1440) { 
+          const h = Math.floor(minsLeft / 60);
+          const m = minsLeft % 60;
+          return { code: 'AKAN_DATANG', label: `STARTS IN ${h}H ${m}M`, class: 'bg-cyan-950 text-cyan-400 border border-cyan-500/30 font-bold' };
+        } else {
+          return { code: 'AKAN_DATANG', label: 'UPCOMING', class: 'bg-slate-900 text-slate-500 border border-slate-800' };
+        }
+      }
+    }
+
+    // ── GROUP CARD ───────────────────────────────────────────────────────────
     function GroupCard({ m, isFav, toggleFav, now }) {
       const c = GC[m.g] || '#00E8FF';
       const mood = getMood(m.t);
@@ -329,6 +299,7 @@
               </div>
 
               <div class="text-center px-1 flex flex-col items-center justify-center min-w-[72px]">
+                {/* JAM KEKAL DI ATAS PAPAN SKOR */}
                 <div class="mono text-[10px] font-bold text-slate-400 tracking-wide mb-1.5">{formatTime12H(m.t)}</div>
                 {hasScore ? (
                   <div class="mono text-base font-black text-amber-400 tracking-tight drop-shadow-[0_0_10px_rgba(245,197,24,0.3)] bg-amber-400/5 border border-amber-400/10 px-1.5 py-0.5 rounded shadow-inner">{m.home_score} - {m.away_score}</div>
@@ -355,7 +326,7 @@
       );
     }
 
-    // ── KALAH MATI CARD (KNOCKOUT ROUNDS) ────────────────────────────────────
+    // ── KNOCKOUT CARD ────────────────────────────────────────────────────────
     function KoCard({ m, now }) {
       const isFinal = m.phase === 'FINAL';
       const isBronze = m.phase === 'BRONZE';
@@ -386,6 +357,7 @@
               </div>
               
               <div class="text-center px-1 flex flex-col items-center justify-center min-w-[72px]">
+                {/* JAM KEKAL DI ATAS PAPAN SKOR */}
                 <div class="mono text-[10px] font-bold text-slate-400 tracking-wide mb-1.5" style={{ color: c }}>{formatTime12H(m.t)}</div>
                 {hasScore ? (
                   <div class="mono text-base font-black tracking-tight text-amber-400 bg-amber-400/5 border border-amber-400/10 px-1.5 py-0.5 rounded shadow-inner">{m.home_score} - {m.away_score}</div>
@@ -427,6 +399,7 @@
         return saved ? JSON.parse(saved) : [];
       });
 
+      // Tembak API luaran strictly untuk tarik data live scores & fasa penyudah sahaja
       useEffect(() => {
         function loadApiData() {
           fetch("https://worldcup26.ir/get/games", {
@@ -446,7 +419,7 @@
               setApiGamesMap(map);
             }
           })
-          .catch(err => console.error("API Error skipped:", err));
+          .catch(err => console.error("API Sync Skipped:", err));
         }
 
         loadApiData();
@@ -462,7 +435,7 @@
         localStorage.setItem('wc2026_fav_teams', JSON.stringify(favTeams));
       }, [favTeams]);
 
-      // Penggabungan data Group Stage
+      // Menggabungkan data API secara selamat tanpa mengubah masa MYT kalibrasi kita
       const liveGSArray = useMemo(() => {
         return GS.map(m => {
           const matchData = Object.values(apiGamesMap).find(g => {
@@ -474,11 +447,6 @@
           
           let updatedMatch = { ...m };
           if (matchData) {
-            const convertedMyt = convertApiToMyt(matchData.local_date, m.v);
-            if (convertedMyt) {
-              updatedMatch.d = convertedMyt.date;
-              updatedMatch.t = convertedMyt.time;
-            }
             updatedMatch.home_score = matchData.home_score !== 'null' ? matchData.home_score : null;
             updatedMatch.away_score = matchData.away_score !== 'null' ? matchData.away_score : null;
             updatedMatch.api_live = matchData.finished === 'FALSE' && matchData.time_elapsed !== 'notstarted';
@@ -488,25 +456,19 @@
         });
       }, [apiGamesMap]);
 
-      // Penggabungan data Kalah Mati
       const liveKOArray = useMemo(() => {
         return KO.map(m => {
           const matchData = apiGamesMap[m.id];
           
           let updatedMatch = { ...m };
           if (matchData) {
-            const convertedMyt = convertApiToMyt(matchData.local_date, m.v);
-            if (convertedMyt) {
-              updatedMatch.d = convertedMyt.date;
-              updatedMatch.t = convertedMyt.time;
-            }
             const resolvedHome = matchData.home_team_name_en && matchData.home_team_id !== "0" ? normalizeTeamName(matchData.home_team_name_en) : null;
             const resolvedAway = matchData.away_team_name_en && matchData.away_team_id !== "0" ? normalizeTeamName(matchData.away_team_name_en) : null;
             
             updatedMatch.h = resolvedHome || m.h || matchData.home_team_label || 'TBD';
             updatedMatch.a = resolvedAway || m.a || matchData.away_team_label || 'TBD';
-            updatedMatch.home_score = matchData.home_score !== 'null' ? matchData.home_score : null,
-            updatedMatch.away_score = matchData.away_score !== 'null' ? matchData.away_score : null,
+            updatedMatch.home_score = matchData.home_score !== 'null' ? matchData.home_score : null;
+            updatedMatch.away_score = matchData.away_score !== 'null' ? matchData.away_score : null;
             updatedMatch.api_live = matchData.finished === 'FALSE' && matchData.time_elapsed !== 'notstarted';
             updatedMatch.api_finished = matchData.finished === 'TRUE';
           }
