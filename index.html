@@ -8,7 +8,7 @@
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- React & ReactDOM (stable) -->
+  <!-- React & ReactDOM -->
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 
@@ -37,6 +37,10 @@
     .bg-slate-1000 { background-color: #0a0f1e; }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .flag-fallback {
+      font-size: 1.5rem;
+      line-height: 1;
+    }
   </style>
 </head>
 <body>
@@ -51,19 +55,7 @@
 
   <script type="text/babel">
     // ============================================================
-    //  PASTIKAN React & ReactDOM TELAH DIMUAT
-    // ============================================================
-    if (typeof React === 'undefined' || typeof ReactDOM === 'undefined') {
-      document.getElementById('root').innerHTML = `
-        <div style="padding:2rem;text-align:center;color:#ef4444;">
-          ❌ React gagal dimuat. Sila refresh atau semak sambungan internet.
-        </div>
-      `;
-      throw new Error('React or ReactDOM not loaded');
-    }
-
-    // ============================================================
-    //  HOOKS DESTRUCTURING - INI YANG PALING PENTING!
+    //  HOOKS DESTRUCTURING
     // ============================================================
     const { useState, useEffect, useMemo } = React;
 
@@ -72,6 +64,38 @@
     // ============================================================
     //  DATA
     // ============================================================
+    // Emoji flags fallback
+    const EMOJI_FLAGS = {
+      'Mexico': '🇲🇽', 'South Africa': '🇿🇦', 'South Korea': '🇰🇷', 'Czechia': '🇨🇿',
+      'Canada': '🇨🇦', 'Bosnia': '🇧🇦', 'Qatar': '🇶🇦', 'Switzerland': '🇨🇭',
+      'Brazil': '🇧🇷', 'Morocco': '🇲🇦', 'Haiti': '🇭🇹', 'Scotland': '🏴󠁧󠁢󠁳󠁣󠁴󠁿',
+      'USA': '🇺🇸', 'Paraguay': '🇵🇾', 'Australia': '🇦🇺', 'Türkiye': '🇹🇷',
+      'Germany': '🇩🇪', 'Curaçao': '🇨🇼', 'Ivory Coast': '🇨🇮', 'Ecuador': '🇪🇨',
+      'Netherlands': '🇳🇱', 'Japan': '🇯🇵', 'Sweden': '🇸🇪', 'Tunisia': '🇹🇳',
+      'Belgium': '🇧🇪', 'Egypt': '🇪🇬', 'Iran': '🇮🇷', 'New Zealand': '🇳🇿',
+      'Spain': '🇪🇸', 'Cape Verde': '🇨🇻', 'Saudi Arabia': '🇸🇦', 'Uruguay': '🇺🇾',
+      'France': '🇫🇷', 'Senegal': '🇸🇳', 'Iraq': '🇮🇶', 'Norway': '🇳🇴',
+      'Argentina': '🇦🇷', 'Algeria': '🇩🇿', 'Austria': '🇦🇹', 'Jordan': '🇯🇴',
+      'Portugal': '🇵🇹', 'DR Congo': '🇨🇩', 'Uzbekistan': '🇺🇿', 'Colombia': '🇨🇴',
+      'England': '🏴󠁧󠁢󠁥󠁮󠁧󠁿', 'Croatia': '🇭🇷', 'Ghana': '🇬🇭', 'Panama': '🇵🇦'
+    };
+
+    // Country code to emoji mapping (for fallback)
+    const COUNTRY_EMOJI = {
+      'mx': '🇲🇽', 'za': '🇿🇦', 'kr': '🇰🇷', 'cz': '🇨🇿',
+      'ca': '🇨🇦', 'ba': '🇧🇦', 'qa': '🇶🇦', 'ch': '🇨🇭',
+      'br': '🇧🇷', 'ma': '🇲🇦', 'ht': '🇭🇹', 'gb-sct': '🏴󠁧󠁢󠁳󠁣󠁴󠁿',
+      'us': '🇺🇸', 'py': '🇵🇾', 'au': '🇦🇺', 'tr': '🇹🇷',
+      'de': '🇩🇪', 'cw': '🇨🇼', 'ci': '🇨🇮', 'ec': '🇪🇨',
+      'nl': '🇳🇱', 'jp': '🇯🇵', 'se': '🇸🇪', 'tn': '🇹🇳',
+      'be': '🇧🇪', 'eg': '🇪🇬', 'ir': '🇮🇷', 'nz': '🇳🇿',
+      'es': '🇪🇸', 'cv': '🇨🇻', 'sa': '🇸🇦', 'uy': '🇺🇾',
+      'fr': '🇫🇷', 'sn': '🇸🇳', 'iq': '🇮🇶', 'no': '🇳🇴',
+      'ar': '🇦🇷', 'dz': '🇩🇿', 'at': '🇦🇹', 'jo': '🇯🇴',
+      'pt': '🇵🇹', 'cd': '🇨🇩', 'uz': '🇺🇿', 'co': '🇨🇴',
+      'gb-eng': '🏴󠁧󠁢󠁥󠁮󠁧󠁿', 'hr': '🇭🇷', 'gh': '🇬🇭', 'pa': '🇵🇦'
+    };
+
     const FLAG_CODES = {
       'Mexico': 'mx', 'South Africa': 'za', 'South Korea': 'kr', 'Czechia': 'cz',
       'Canada': 'ca', 'Bosnia': 'ba', 'Qatar': 'qa', 'Switzerland': 'ch',
@@ -252,10 +276,16 @@
       return { icon:'🌆', label:'Evening' };
     }
 
+    // Get flag URL (primary)
     function getFlagUrl(teamName) {
       const code = FLAG_CODES[teamName];
       if (!code) return null;
-      return `https://flagcdn.com/w160/${code}.png`;
+      return `https://flagsapi.com/${code.toUpperCase()}/flat/64.png`;
+    }
+
+    // Get emoji flag fallback
+    function getEmojiFlag(teamName) {
+      return EMOJI_FLAGS[teamName] || '🏳️';
     }
 
     function getMatchStatus(dateStr, timeStr, now) {
@@ -279,6 +309,29 @@
           return { code: 'AKAN_DATANG', label: 'UPCOMING', class: 'bg-slate-900 text-slate-500 border border-slate-800' };
         }
       }
+    }
+
+    // ============================================================
+    //  FLAG COMPONENT WITH FALLBACK
+    // ============================================================
+    function FlagDisplay({ teamName, className = '' }) {
+      const [imgError, setImgError] = useState(false);
+      const flagUrl = getFlagUrl(teamName);
+      const emoji = getEmojiFlag(teamName);
+
+      if (!flagUrl || imgError) {
+        return <span className={`flag-fallback ${className}`}>{emoji}</span>;
+      }
+
+      return (
+        <img
+          src={flagUrl}
+          alt={teamName}
+          className={`${className}`}
+          onError={() => setImgError(true)}
+          loading="lazy"
+        />
+      );
     }
 
     // ============================================================
@@ -343,7 +396,7 @@
             <div className="grid grid-cols-3 items-center gap-1 my-2">
               <div className="flex flex-col items-center text-center">
                 <div className="w-14 h-9 overflow-hidden rounded shadow-md border border-slate-800 flex items-center justify-center bg-slate-950 transform group-hover:scale-105 transition-transform duration-300">
-                  {getFlagUrl(m.h) ? <img src={getFlagUrl(m.h)} alt={m.h} className="w-full h-full object-cover" /> : <span className="text-xl">🏳️</span>}
+                  <FlagDisplay teamName={m.h} className="w-full h-full object-cover" />
                 </div>
                 <span className="text-[11px] font-extrabold text-slate-200 mt-2 line-clamp-1 w-full">{m.h}</span>
               </div>
@@ -356,7 +409,7 @@
 
               <div className="flex flex-col items-center text-center">
                 <div className="w-14 h-9 overflow-hidden rounded shadow-md border border-slate-800 flex items-center justify-center bg-slate-950 transform group-hover:scale-105 transition-transform duration-300">
-                  {getFlagUrl(m.a) ? <img src={getFlagUrl(m.a)} alt={m.a} className="w-full h-full object-cover" /> : <span className="text-xl">🏳️</span>}
+                  <FlagDisplay teamName={m.a} className="w-full h-full object-cover" />
                 </div>
                 <span className="text-[11px] font-extrabold text-slate-200 mt-2 line-clamp-1 w-full">{m.a}</span>
               </div>
@@ -529,6 +582,9 @@
       const isGS = tab === 'GS';
       const todayStr = now.toLocaleDateString('sv-SE');
 
+      // Force status filter to 'ALL' when viewing Group Stage to show all matches
+      const effectiveStatusFilter = (isGS && statusFilter === 'ALL') ? 'ALL' : statusFilter;
+
       return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
@@ -561,12 +617,12 @@
                     <div className="text-[10px] font-bold tracking-widest text-slate-500 uppercase">Next Match</div>
                     <div className="flex items-center gap-2 mt-2.5">
                       <div className="flex items-center gap-1.5 bg-slate-900/90 px-2 py-1 rounded border border-slate-800">
-                        <img src={getFlagUrl(nextMatch.h)} alt="" className="w-4 h-2.5 object-cover rounded-sm shadow-sm" />
+                        <FlagDisplay teamName={nextMatch.h} className="w-4 h-3 object-cover rounded-sm shadow-sm" />
                         <span className="text-[11px] font-bold text-slate-300 max-w-[65px] truncate">{nextMatch.h}</span>
                       </div>
                       <span className="text-[9px] font-bold text-slate-600">VS</span>
                       <div className="flex items-center gap-1.5 bg-slate-900/90 px-2 py-1 rounded border border-slate-800">
-                        <img src={getFlagUrl(nextMatch.a)} alt="" className="w-4 h-2.5 object-cover rounded-sm shadow-sm" />
+                        <FlagDisplay teamName={nextMatch.a} className="w-4 h-3 object-cover rounded-sm shadow-sm" />
                         <span className="text-[11px] font-bold text-slate-300 max-w-[65px] truncate">{nextMatch.a}</span>
                       </div>
                     </div>
@@ -692,7 +748,7 @@
               <div className="flex flex-wrap gap-3">
                 {GROUPS[grp].map(t => (
                   <span key={t} className={`text-xs font-semibold px-2 py-1 rounded bg-slate-900/80 border border-slate-800 flex items-center gap-1.5 ${favTeams.includes(t) ? 'text-amber-400 border-amber-500/30' : 'text-slate-300'}`}>
-                    <img src={getFlagUrl(t)} alt="" className="w-4 h-2.5 object-cover rounded-sm" />
+                    <FlagDisplay teamName={t} className="w-4 h-2.5 object-cover rounded-sm" />
                     {t}
                   </span>
                 ))}
@@ -750,7 +806,7 @@
     }
 
     // ============================================================
-    //  RENDER WITH ERROR BOUNDARY
+    //  RENDER
     // ============================================================
     try {
       const rootElement = document.getElementById('root');
