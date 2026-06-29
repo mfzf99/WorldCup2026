@@ -111,7 +111,6 @@
       {id:28,g:'A',h:'Mexico',       a:'South Korea',   d:'2026-06-19',t:'09:00',v:'Zapopan'},
       {id:29,g:'D',h:'USA',          a:'Australia',     d:'2026-06-20',t:'03:00',v:'Seattle'},
       {id:30,g:'C',h:'Scotland',     a:'Morocco',       d:'2026-06-20',t:'06:00',v:'Boston'},
-      /* FIXED TYPO HERE (t- to t) */
       {id:31,g:'C',h:'Brazil',       a:'Haiti',         d:'2026-06-20',t:'08:30',v:'Philadelphia'},
       {id:32,g:'D',h:'Türkiye',      a:'Paraguay',      d:'2026-06-20',t:'11:00',v:'San Francisco'},
       {id:33,g:'F',h:'Netherlands',  a:'Sweden',        d:'2026-06-21',t:'01:00',v:'Houston'},
@@ -160,7 +159,7 @@
       {id:73, phase:'R32',n:1,  d:'2026-06-29',t:'03:00',v:'Los Angeles'},
       {id:74, phase:'R32',n:2,  d:'2026-06-30',t:'03:00',v:'Houston'},
       {id:75, phase:'R32',n:3,  d:'2026-06-30',t:'04:30',v:'Boston'},
-      {id:76, phase:'R32',n:4,  d:'2026-07-30',t:'09:00',v:'Monterrey'},
+      {id:76, phase:'R32',n:4,  d:'2026-06-30',t:'09:00',v:'Monterrey'},
       {id:77, phase:'R32',n:5,  d:'2026-07-01',t:'01:00',v:'Dallas'},
       {id:78, phase:'R32',n:6,  d:'2026-07-01',t:'05:00',v:'New Jersey'},
       {id:79, phase:'R32',n:7,  d:'2026-07-01',t:'09:00',v:'Mexico City'},
@@ -194,21 +193,56 @@
     function normalizeTeamName(name) {
       if (!name) return '';
       const mapping = {
-        'Czech Republic': 'Czechia',
-        'Turkey': 'Türkiye',
-        'United States': 'USA',
-        'Bosnia and Herzegovina': 'Bosnia',
-        'Democratic Republic of the Congo': 'DR Congo'
+        'Czech Republic': 'Czechia', 'Turkey': 'Türkiye', 'United States': 'USA',
+        'Bosnia and Herzegovina': 'Bosnia', 'Democratic Republic of the Congo': 'DR Congo'
       };
       return mapping[name] || name;
     }
 
-    function fmtDate(s) {
-      const d = new Date(s + 'T12:00:00');
-      return `${DAYS[d.getDay()]}, ${MONTHS[d.getMonth()]} ${d.getDate()} ${d.getFullYear()}`;
+    // Algoritma Pintar menukar Waktu Stadium API ke Waktu Sah Malaysia (MYT) secara Real-Time
+    function convertApiToMyt(apiDateStr, venue) {
+      if (!apiDateStr || !venue) return null;
+      const parts = apiDateStr.split(' ');
+      if (parts.length < 2) return null;
+      const dateParts = parts[0].split('/');
+      const timeParts = parts[1].split(':');
+      if (dateParts.length < 3 || timeParts.length < 2) return null;
+
+      const month = parseInt(dateParts[0], 10) - 1;
+      const day = parseInt(dateParts[1], 10);
+      const year = parseInt(dateParts[2], 10);
+      const hour = parseInt(timeParts[0], 10);
+      const minute = parseInt(timeParts[1], 10);
+
+      // Pemetaan Jarak Waktu Rasmi June/July (Daylight Saving) ke Malaysia Time (+8)
+      let offsetToMyt = 12; // Default Eastern Time (EDT) -> MYT (+12 jam)
+      const vLower = venue.toLowerCase();
+      if (vLower.includes('houston') || vLower.includes('dallas') || vLower.includes('kansas') || vLower.includes('mexico') || vLower.includes('zapopan') || vLower.includes('monterrey')) {
+        offsetToMyt = 13; // Central Time (CDT) -> MYT (+13 jam)
+      } else if (vLower.includes('los angeles') || vLower.includes('san Copyfrancisco') || vLower.includes('seattle') || vLower.includes('vancouver') || vLower.includes('zapopan')) {
+        offsetToMyt = 15; // Pacific Time (PDT) -> MYT (+15 jam)
+      }
+
+      const matchDateObj = new Date(year, month, day, hour, minute);
+      matchDateObj.setHours(matchDateObj.getHours() + offsetToMyt);
+
+      const mytYear = matchDateObj.getFullYear();
+      const mytMonth = String(matchDateObj.getMonth() + 1).padStart(2, '0');
+      const mytDay = String(matchDateObj.getDate()).padStart(2, '0');
+      const mytHour = String(matchDateObj.getHours()).padStart(2, '0');
+      const mytMin = String(matchDateObj.getMinutes()).padStart(2, '0');
+
+      return {
+        date: `${mytYear}-${mytMonth}-${mytDay}`,
+        time: `${mytHour}:${mytMin}`
+      };
     }
 
-    // Fungsi 12-Hour AM/PM Format rasmi
+    function fmtDate(s) {
+      const d = new Date(s + 'T12:00:00');
+      return `${DAYS[d.getDay()]} , ${MONTHS[d.getMonth()]} ${d.getDate()} ${d.getFullYear()}`;
+    }
+
     function formatTime12H(tStr) {
       if (!tStr) return '';
       const [hStr, mStr] = tStr.split(':');
@@ -225,13 +259,6 @@
       if (h < 12) return { icon:'🌅', label:'Morning' };
       if (h < 17) return { icon:'☀️', label:'Afternoon' };
       return { icon:'🌆', label:'Evening' };
-    }
-
-    function getFlagUrl(teamName) {
-      if (!teamName) return null;
-      const code = FLAG_CODES[teamName];
-      if (!code) return null;
-      return `https://flagcdn.com/w160/${code}.png`;
     }
 
     function getMatchStatus(m, now) {
@@ -300,14 +327,15 @@
                 <span class="text-[11px] font-extrabold text-slate-200 mt-2 line-clamp-1 w-full">{m.h}</span>
               </div>
 
-              <div class="text-center px-1">
+              {/* CENTER INFO COLUMN - JAM SENTIASA ADA + SKOR LIVE */}
+              <div class="text-center px-1 flex flex-col items-center justify-center min-w-[72px]">
+                <div class="mono text-[10px] font-bold text-slate-400 tracking-wide mb-1.5">{formatTime12H(m.t)}</div>
                 {hasScore ? (
-                  <div class="mono text-lg font-black text-amber-400 tracking-tight drop-shadow-[0_0_10px_rgba(245,197,24,0.3)]">{m.home_score} - {m.away_score}</div>
+                  <div class="mono text-base font-black text-amber-400 tracking-tight drop-shadow-[0_0_10px_rgba(245,197,24,0.3)] bg-amber-400/5 border border-amber-400/10 px-1.5 py-0.5 rounded shadow-inner">{m.home_score} - {m.away_score}</div>
                 ) : (
-                  <div class="mono text-[13px] font-black text-cyan-400 tracking-wide drop-shadow-[0_0_8px_rgba(6,182,212,0.4)] whitespace-nowrap">{formatTime12H(m.t)}</div>
+                  <div class="text-[10px] font-black text-slate-600 tracking-widest py-1">VS</div>
                 )}
-                <div class="text-[8px] font-extrabold tracking-widest text-slate-500 mt-0.5">MYT</div>
-                <div class="text-[9px] font-black text-slate-600 mt-1 tracking-widest">VS</div>
+                <div class="text-[8px] font-bold tracking-widest text-slate-500 mt-1.5">MYT</div>
               </div>
 
               <div class="flex flex-col items-center text-center">
@@ -357,13 +385,15 @@
                 <div class="text-[11px] font-bold text-slate-300 mt-2 truncate max-w-[80px] mx-auto">{m.h || 'TBD'}</div>
               </div>
               
-              <div class="text-center px-2">
+              {/* CENTER INFO COLUMN - JAM SENTIASA ADA + SKOR LIVE */}
+              <div class="text-center px-1 flex flex-col items-center justify-center min-w-[72px]">
+                <div class="mono text-[10px] font-bold text-slate-400 tracking-wide mb-1.5" style={{ color: c }}>{formatTime12H(m.t)}</div>
                 {hasScore ? (
-                  <div class="mono text-lg font-black tracking-tight text-amber-400 shadow-amber-500/20">{m.home_score} - {m.away_score}</div>
+                  <div class="mono text-base font-black tracking-tight text-amber-400 bg-amber-400/5 border border-amber-400/10 px-1.5 py-0.5 rounded shadow-inner">{m.home_score} - {m.away_score}</div>
                 ) : (
-                  <div class="mono text-sm font-black tracking-wider whitespace-nowrap" style={{ color: c, textShadow: `0 0 10px ${c}60` }}>{formatTime12H(m.t)}</div>
+                  <div class="text-[10px] font-black text-slate-600 tracking-widest py-1">VS</div>
                 )}
-                <div class="text-[8px] font-extrabold tracking-widest text-slate-500 mt-0.5">MYT</div>
+                <div class="text-[8px] font-bold tracking-widest text-slate-500 mt-1.5">MYT</div>
               </div>
 
               <div class="text-center flex-1">
@@ -391,16 +421,13 @@
       const [favOnly, setFavOnly] = useState(false);
       const [q, setQ] = useState('');
       const [now, setNow] = useState(new Date());
+      const [apiGamesMap, setApiGamesMap] = useState({});
 
       const [favTeams, setFavTeams] = useState(() => {
         const saved = localStorage.getItem('wc2026_fav_teams');
         return saved ? JSON.parse(saved) : [];
       });
 
-      // State pemetaan data API luaran
-      const [apiGamesMap, setApiGamesMap] = useState({});
-
-      // Request data dari API secara berkala (Heartbeat 30 saat)
       useEffect(() => {
         function loadApiData() {
           fetch("https://worldcup26.ir/get/games", {
@@ -410,7 +437,6 @@
               "Content-Type": "application/json"
             }
           })
-          /* FIXED: Tukar response.ok kepada res.ok */
           .then(res => res.ok ? res.json() : Promise.reject(res))
           .then(data => {
             if (data && data.games) {
@@ -421,26 +447,23 @@
               setApiGamesMap(map);
             }
           })
-          .catch(err => console.error("API Fetch Error:", err));
+          .catch(err => console.error("API Error skipped:", err));
         }
 
         loadApiData();
         const apiInterval = setInterval(loadApiData, 30000);
-        return () => clearInterval(apiInterval);
-      }, []);
-
-      useEffect(() => {
-        const interval = setInterval(() => {
-          setNow(new Date());
-        }, 1000);
-        return () => clearInterval(interval);
+        const timeInterval = setInterval(() => setNow(new Date()), 1000);
+        return () => {
+          clearInterval(apiInterval);
+          clearInterval(timeInterval);
+        };
       }, []);
 
       useEffect(() => {
         localStorage.setItem('wc2026_fav_teams', JSON.stringify(favTeams));
       }, [favTeams]);
 
-      // Penggabungan data API Live bersama Array Static Tempatan (Group Stage)
+      // Penggabungan + Auto-Kalkulasi Masa MYT untuk Peringkat Kumpulan
       const liveGSArray = useMemo(() => {
         return GS.map(m => {
           const matchData = Object.values(apiGamesMap).find(g => {
@@ -449,37 +472,46 @@
             const apiAway = normalizeTeamName(g.away_team_name_en);
             return (apiHome === m.h && apiAway === m.a) || (apiHome === m.a && apiAway === m.h);
           });
+          
+          let updatedMatch = { ...m };
           if (matchData) {
-            return {
-              ...m,
-              home_score: matchData.home_score !== 'null' ? matchData.home_score : null,
-              away_score: matchData.away_score !== 'null' ? matchData.away_score : null,
-              api_live: matchData.finished === 'FALSE' && matchData.time_elapsed !== 'notstarted',
-              api_finished: matchData.finished === 'TRUE'
-            };
+            const convertedMyt = convertApiToMyt(matchData.local_date, m.v);
+            if (convertedMyt) {
+              updatedMatch.d = convertedMyt.date;
+              updatedMatch.t = convertedMyt.time;
+            }
+            updatedMatch.home_score = matchData.home_score !== 'null' ? matchData.home_score : null;
+            updatedMatch.away_score = matchData.away_score !== 'null' ? matchData.away_score : null;
+            updatedMatch.api_live = matchData.finished === 'FALSE' && matchData.time_elapsed !== 'notstarted';
+            updatedMatch.api_finished = matchData.finished === 'TRUE';
           }
-          return m;
+          return updatedMatch;
         });
       }, [apiGamesMap]);
 
-      // Penggabungan data API Live bersama Array Static Tempatan (Knockout Rounds)
+      // Penggabungan + Auto-Kalkulasi Masa MYT untuk Peringkat Kalah Mati
       const liveKOArray = useMemo(() => {
         return KO.map(m => {
-          const matchData = apiGamesMap[m.id];
+          const matchData = Object.values(apiGamesMap).find(g => g.type !== 'group' && Number(g.id) === m.id);
+          
+          let updatedMatch = { ...m };
           if (matchData) {
+            const convertedMyt = convertApiToMyt(matchData.local_date, m.v);
+            if (convertedMyt) {
+              updatedMatch.d = convertedMyt.date;
+              updatedMatch.t = convertedMyt.time;
+            }
             const resolvedHome = matchData.home_team_name_en && matchData.home_team_id !== "0" ? normalizeTeamName(matchData.home_team_name_en) : null;
             const resolvedAway = matchData.away_team_name_en && matchData.away_team_id !== "0" ? normalizeTeamName(matchData.away_team_name_en) : null;
-            return {
-              ...m,
-              h: resolvedHome || m.h || matchData.home_team_label || 'TBD',
-              a: resolvedAway || m.a || matchData.away_team_label || 'TBD',
-              home_score: matchData.home_score !== 'null' ? matchData.home_score : null,
-              away_score: matchData.away_score !== 'null' ? matchData.away_score : null,
-              api_live: matchData.finished === 'FALSE' && matchData.time_elapsed !== 'notstarted',
-              api_finished: matchData.finished === 'TRUE'
-            };
+            
+            updatedMatch.h = resolvedHome || m.h || matchData.home_team_label || 'TBD';
+            updatedMatch.a = resolvedAway || m.a || matchData.away_team_label || 'TBD';
+            updatedMatch.home_score = matchData.home_score !== 'null' ? matchData.home_score : null;
+            updatedMatch.away_score = matchData.away_score !== 'null' ? matchData.away_score : null;
+            updatedMatch.api_live = matchData.finished === 'FALSE' && matchData.time_elapsed !== 'notstarted';
+            updatedMatch.api_finished = matchData.finished === 'TRUE';
           }
-          return m;
+          return updatedMatch;
         });
       }, [apiGamesMap]);
 
