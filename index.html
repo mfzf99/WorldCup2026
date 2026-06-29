@@ -175,157 +175,116 @@
     }
 
     // ============================================================
-    //  FALLBACK DATA (Hardcoded) – akan guna kalau API gagal
+    //  HARDCODED DATA (FALLBACK) – 104 MATCHES LENGKAP
     // ============================================================
-    const FALLBACK_GS = [
-      {id:1, g:'A',h:'Mexico',       a:'South Africa', d:'2026-06-12',t:'03:00',v:'Mexico City'},
-      {id:2, g:'A',h:'South Korea',  a:'Czechia',       d:'2026-06-12',t:'10:00',v:'Zapopan'},
-      {id:3, g:'B',h:'Canada',       a:'Bosnia',        d:'2026-06-13',t:'03:00',v:'Toronto'},
-      {id:4, g:'D',h:'USA',          a:'Paraguay',      d:'2026-06-13',t:'09:00',v:'Los Angeles'},
-      {id:5, g:'B',h:'Qatar',        a:'Switzerland',   d:'2026-06-14',t:'03:00',v:'San Francisco'},
-      {id:6, g:'C',h:'Brazil',       a:'Morocco',       d:'2026-06-14',t:'06:00',v:'New Jersey'},
-      {id:7, g:'C',h:'Haiti',        a:'Scotland',      d:'2026-06-14',t:'09:00',v:'Boston'},
-      {id:8, g:'D',h:'Australia',    a:'Türkiye',       d:'2026-06-14',t:'12:00',v:'Vancouver'},
-      {id:9, g:'E',h:'Germany',      a:'Curaçao',       d:'2026-06-15',t:'01:00',v:'Houston'},
-      {id:10,g:'F',h:'Netherlands',  a:'Japan',         d:'2026-06-15',t:'04:00',v:'Dallas'},
-      {id:11,g:'E',h:'Ivory Coast',  a:'Ecuador',       d:'2026-06-15',t:'07:00',v:'Philadelphia'},
-      {id:12,g:'F',h:'Sweden',       a:'Tunisia',       d:'2026-06-15',t:'10:00',v:'Monterrey'},
-      {id:13,g:'H',h:'Spain',        a:'Cape Verde',    d:'2026-06-16',t:'00:00',v:'Atlanta'},
-      {id:14,g:'G',h:'Belgium',      a:'Egypt',         d:'2026-06-16',t:'03:00',v:'Vancouver'},
-      {id:15,g:'H',h:'Saudi Arabia', a:'Uruguay',       d:'2026-06-16',t:'06:00',v:'Miami'},
-      {id:16,g:'G',h:'Iran',         a:'New Zealand',   d:'2026-06-16',t:'09:00',v:'Los Angeles'},
-      {id:17,g:'I',h:'France',       a:'Senegal',       d:'2026-06-17',t:'03:00',v:'New Jersey'},
-      {id:18,g:'I',h:'Iraq',         a:'Norway',        d:'2026-06-17',t:'06:00',v:'Boston'},
-      {id:19,g:'J',h:'Argentina',    a:'Algeria',       d:'2026-06-17',t:'09:00',v:'Kansas City'},
-      {id:20,g:'J',h:'Austria',      a:'Jordan',        d:'2026-06-17',t:'12:00',v:'San Francisco'},
-      {id:21,g:'K',h:'Portugal',     a:'DR Congo',      d:'2026-06-18',t:'01:00',v:'Houston'},
-      {id:22,g:'L',h:'England',      a:'Croatia',       d:'2026-06-18',t:'04:00',v:'Dallas'},
-      {id:23,g:'L',h:'Ghana',        a:'Panama',        d:'2026-06-18',t:'07:00',v:'Toronto'},
-      {id:24,g:'K',h:'Uzbekistan',   a:'Colombia',      d:'2026-06-18',t:'10:00',v:'Mexico City'},
-      {id:25,g:'A',h:'Czechia',      a:'South Africa',  d:'2026-06-19',t:'00:00',v:'Atlanta'},
-      {id:26,g:'B',h:'Switzerland',  a:'Bosnia',        d:'2026-06-19',t:'03:00',v:'Los Angeles'},
-      {id:27,g:'B',h:'Canada',       a:'Qatar',         d:'2026-06-19',t:'06:00',v:'Vancouver'},
-      {id:28,g:'A',h:'Mexico',       a:'South Korea',   d:'2026-06-19',t:'09:00',v:'Zapopan'},
-      {id:29,g:'D',h:'USA',          a:'Australia',     d:'2026-06-20',t:'03:00',v:'Seattle'},
-      {id:30,g:'C',h:'Scotland',     a:'Morocco',       d:'2026-06-20',t:'06:00',v:'Boston'},
-      {id:31,g:'C',h:'Brazil',       a:'Haiti',         d:'2026-06-20',t:'08:30',v:'Philadelphia'},
-      {id:32,g:'D',h:'Türkiye',      a:'Paraguay',      d:'2026-06-20',t:'11:00',v:'San Francisco'},
-      {id:33,g:'F',h:'Netherlands',  a:'Sweden',        d:'2026-06-21',t:'01:00',v:'Houston'},
-      {id:34,g:'E',h:'Germany',      a:'Ivory Coast',   d:'2026-06-21',t:'04:00',v:'Toronto'},
-      {id:35,g:'E',h:'Ecuador',      a:'Curaçao',       d:'2026-06-21',t:'11:00',v:'Kansas City'},
-      {id:36,g:'F',h:'Tunisia',      a:'Japan',         d:'2026-06-21',t:'12:00',v:'Monterrey'},
-      {id:37,g:'H',h:'Spain',        a:'Saudi Arabia',  d:'2026-06-22',t:'00:00',v:'Atlanta'},
-      {id:38,g:'G',h:'Belgium',      a:'Iran',          d:'2026-06-22',t:'03:00',v:'Los Angeles'},
-      {id:39,g:'H',h:'Uruguay',      a:'Cape Verde',    d:'2026-06-22',t:'06:00',v:'Miami'},
-      {id:40,g:'G',h:'New Zealand',  a:'Egypt',         d:'2026-06-22',t:'09:00',v:'Vancouver'},
-      {id:41,g:'J',h:'Argentina',    a:'Austria',       d:'2026-06-23',t:'01:00',v:'Dallas'},
-      {id:42,g:'I',h:'France',       a:'Iraq',          d:'2026-06-23',t:'05:00',v:'Philadelphia'},
-      {id:43,g:'I',h:'Norway',       a:'Senegal',       d:'2026-06-23',t:'08:00',v:'New Jersey'},
-      {id:44,g:'J',h:'Jordan',       a:'Algeria',       d:'2026-06-23',t:'11:00',v:'San Francisco'},
-      {id:45,g:'K',h:'Portugal',     a:'Uzbekistan',    d:'2026-06-24',t:'01:00',v:'Houston'},
-      {id:46,g:'L',h:'England',      a:'Ghana',         d:'2026-06-24',t:'04:00',v:'Boston'},
-      {id:47,g:'L',h:'Panama',       a:'Croatia',       d:'2026-06-24',t:'07:00',v:'Toronto'},
-      {id:48,g:'K',h:'Colombia',     a:'DR Congo',      d:'2026-06-24',t:'10:00',v:'Zapopan'},
-      {id:49,g:'B',h:'Switzerland',  a:'Canada',        d:'2026-06-25',t:'03:00',v:'Vancouver'},
-      {id:50,g:'B',h:'Bosnia',       a:'Qatar',         d:'2026-06-25',t:'03:00',v:'Seattle'},
-      {id:51,g:'C',h:'Scotland',     a:'Brazil',        d:'2026-06-25',t:'06:00',v:'Miami'},
-      {id:52,g:'C',h:'Morocco',      a:'Haiti',         d:'2026-06-25',t:'06:00',v:'Atlanta'},
-      {id:53,g:'A',h:'Czechia',      a:'Mexico',        d:'2026-06-25',t:'09:00',v:'Mexico City'},
-      {id:54,g:'A',h:'South Africa', a:'South Korea',   d:'2026-06-25',t:'09:00',v:'Monterrey'},
-      {id:55,g:'E',h:'Ecuador',      a:'Germany',       d:'2026-06-26',t:'04:00',v:'New Jersey'},
-      {id:56,g:'E',h:'Curaçao',      a:'Ivory Coast',   d:'2026-06-26',t:'04:00',v:'Philadelphia'},
-      {id:57,g:'F',h:'Japan',        a:'Sweden',        d:'2026-06-26',t:'07:00',v:'Dallas'},
-      {id:58,g:'F',h:'Tunisia',      a:'Netherlands',   d:'2026-06-26',t:'07:00',v:'Kansas City'},
-      {id:59,g:'D',h:'Türkiye',      a:'USA',           d:'2026-06-26',t:'10:00',v:'Los Angeles'},
-      {id:60,g:'D',h:'Paraguay',     a:'Australia',     d:'2026-06-26',t:'10:00',v:'San Francisco'},
-      {id:61,g:'I',h:'Norway',       a:'France',        d:'2026-06-27',t:'03:00',v:'Boston'},
-      {id:62,g:'I',h:'Senegal',      a:'Iraq',          d:'2026-06-27',t:'03:00',v:'Toronto'},
-      {id:63,g:'H',h:'Cape Verde',   a:'Saudi Arabia',  d:'2026-06-27',t:'08:00',v:'Houston'},
-      {id:64,g:'H',h:'Uruguay',      a:'Spain',         d:'2026-06-27',t:'08:00',v:'Zapopan'},
-      {id:65,g:'G',h:'Egypt',        a:'Iran',          d:'2026-06-27',t:'11:00',v:'Seattle'},
-      {id:66,g:'G',h:'New Zealand',  a:'Belgium',       d:'2026-06-27',t:'11:00',v:'Vancouver'},
-      {id:67,g:'L',h:'Panama',       a:'England',       d:'2026-06-28',t:'05:00',v:'New Jersey'},
-      {id:68,g:'L',h:'Croatia',      a:'Ghana',         d:'2026-06-28',t:'05:00',v:'Philadelphia'},
-      {id:70,g:'K',h:'DR Congo',     a:'Uzbekistan',    d:'2026-06-28',t:'07:30',v:'Atlanta'},
-      {id:69,g:'K',h:'Colombia',     a:'Portugal',      d:'2026-06-28',t:'07:30',v:'Miami'},
-      {id:71,g:'J',h:'Algeria',      a:'Austria',       d:'2026-06-28',t:'10:00',v:'Kansas City'},
-      {id:72,g:'J',h:'Jordan',       a:'Argentina',     d:'2026-06-28',t:'10:00',v:'Dallas'},
+    const ALL_MATCHES_HARDCODED = [
+      // Group Stage – 72 matches
+      {id:1, group:'A', home_team_name_en:'Mexico', away_team_name_en:'South Africa', local_date:'06/12/2026 03:00', stadium_id:'Mexico City', type:'group', matchday:1, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:2, group:'A', home_team_name_en:'South Korea', away_team_name_en:'Czechia', local_date:'06/12/2026 10:00', stadium_id:'Zapopan', type:'group', matchday:1, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:3, group:'B', home_team_name_en:'Canada', away_team_name_en:'Bosnia', local_date:'06/13/2026 03:00', stadium_id:'Toronto', type:'group', matchday:1, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:4, group:'D', home_team_name_en:'USA', away_team_name_en:'Paraguay', local_date:'06/13/2026 09:00', stadium_id:'Los Angeles', type:'group', matchday:1, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:5, group:'B', home_team_name_en:'Qatar', away_team_name_en:'Switzerland', local_date:'06/14/2026 03:00', stadium_id:'San Francisco', type:'group', matchday:1, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:6, group:'C', home_team_name_en:'Brazil', away_team_name_en:'Morocco', local_date:'06/14/2026 06:00', stadium_id:'New Jersey', type:'group', matchday:1, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:7, group:'C', home_team_name_en:'Haiti', away_team_name_en:'Scotland', local_date:'06/14/2026 09:00', stadium_id:'Boston', type:'group', matchday:1, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:8, group:'D', home_team_name_en:'Australia', away_team_name_en:'Türkiye', local_date:'06/14/2026 12:00', stadium_id:'Vancouver', type:'group', matchday:1, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:9, group:'E', home_team_name_en:'Germany', away_team_name_en:'Curaçao', local_date:'06/15/2026 01:00', stadium_id:'Houston', type:'group', matchday:1, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:10, group:'F', home_team_name_en:'Netherlands', away_team_name_en:'Japan', local_date:'06/15/2026 04:00', stadium_id:'Dallas', type:'group', matchday:1, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:11, group:'E', home_team_name_en:'Ivory Coast', away_team_name_en:'Ecuador', local_date:'06/15/2026 07:00', stadium_id:'Philadelphia', type:'group', matchday:1, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:12, group:'F', home_team_name_en:'Sweden', away_team_name_en:'Tunisia', local_date:'06/15/2026 10:00', stadium_id:'Monterrey', type:'group', matchday:1, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:13, group:'H', home_team_name_en:'Spain', away_team_name_en:'Cape Verde', local_date:'06/16/2026 00:00', stadium_id:'Atlanta', type:'group', matchday:1, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:14, group:'G', home_team_name_en:'Belgium', away_team_name_en:'Egypt', local_date:'06/16/2026 03:00', stadium_id:'Vancouver', type:'group', matchday:1, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:15, group:'H', home_team_name_en:'Saudi Arabia', away_team_name_en:'Uruguay', local_date:'06/16/2026 06:00', stadium_id:'Miami', type:'group', matchday:1, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:16, group:'G', home_team_name_en:'Iran', away_team_name_en:'New Zealand', local_date:'06/16/2026 09:00', stadium_id:'Los Angeles', type:'group', matchday:1, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:17, group:'I', home_team_name_en:'France', away_team_name_en:'Senegal', local_date:'06/17/2026 03:00', stadium_id:'New Jersey', type:'group', matchday:1, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:18, group:'I', home_team_name_en:'Iraq', away_team_name_en:'Norway', local_date:'06/17/2026 06:00', stadium_id:'Boston', type:'group', matchday:1, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:19, group:'J', home_team_name_en:'Argentina', away_team_name_en:'Algeria', local_date:'06/17/2026 09:00', stadium_id:'Kansas City', type:'group', matchday:1, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:20, group:'J', home_team_name_en:'Austria', away_team_name_en:'Jordan', local_date:'06/17/2026 12:00', stadium_id:'San Francisco', type:'group', matchday:1, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:21, group:'K', home_team_name_en:'Portugal', away_team_name_en:'DR Congo', local_date:'06/18/2026 01:00', stadium_id:'Houston', type:'group', matchday:1, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:22, group:'L', home_team_name_en:'England', away_team_name_en:'Croatia', local_date:'06/18/2026 04:00', stadium_id:'Dallas', type:'group', matchday:1, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:23, group:'L', home_team_name_en:'Ghana', away_team_name_en:'Panama', local_date:'06/18/2026 07:00', stadium_id:'Toronto', type:'group', matchday:1, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:24, group:'K', home_team_name_en:'Uzbekistan', away_team_name_en:'Colombia', local_date:'06/18/2026 10:00', stadium_id:'Mexico City', type:'group', matchday:1, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:25, group:'A', home_team_name_en:'Czechia', away_team_name_en:'South Africa', local_date:'06/19/2026 00:00', stadium_id:'Atlanta', type:'group', matchday:2, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:26, group:'B', home_team_name_en:'Switzerland', away_team_name_en:'Bosnia', local_date:'06/19/2026 03:00', stadium_id:'Los Angeles', type:'group', matchday:2, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:27, group:'B', home_team_name_en:'Canada', away_team_name_en:'Qatar', local_date:'06/19/2026 06:00', stadium_id:'Vancouver', type:'group', matchday:2, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:28, group:'A', home_team_name_en:'Mexico', away_team_name_en:'South Korea', local_date:'06/19/2026 09:00', stadium_id:'Zapopan', type:'group', matchday:2, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:29, group:'D', home_team_name_en:'USA', away_team_name_en:'Australia', local_date:'06/20/2026 03:00', stadium_id:'Seattle', type:'group', matchday:2, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:30, group:'C', home_team_name_en:'Scotland', away_team_name_en:'Morocco', local_date:'06/20/2026 06:00', stadium_id:'Boston', type:'group', matchday:2, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:31, group:'C', home_team_name_en:'Brazil', away_team_name_en:'Haiti', local_date:'06/20/2026 08:30', stadium_id:'Philadelphia', type:'group', matchday:2, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:32, group:'D', home_team_name_en:'Türkiye', away_team_name_en:'Paraguay', local_date:'06/20/2026 11:00', stadium_id:'San Francisco', type:'group', matchday:2, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:33, group:'F', home_team_name_en:'Netherlands', away_team_name_en:'Sweden', local_date:'06/21/2026 01:00', stadium_id:'Houston', type:'group', matchday:2, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:34, group:'E', home_team_name_en:'Germany', away_team_name_en:'Ivory Coast', local_date:'06/21/2026 04:00', stadium_id:'Toronto', type:'group', matchday:2, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:35, group:'E', home_team_name_en:'Ecuador', away_team_name_en:'Curaçao', local_date:'06/21/2026 11:00', stadium_id:'Kansas City', type:'group', matchday:2, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:36, group:'F', home_team_name_en:'Tunisia', away_team_name_en:'Japan', local_date:'06/21/2026 12:00', stadium_id:'Monterrey', type:'group', matchday:2, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:37, group:'H', home_team_name_en:'Spain', away_team_name_en:'Saudi Arabia', local_date:'06/22/2026 00:00', stadium_id:'Atlanta', type:'group', matchday:2, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:38, group:'G', home_team_name_en:'Belgium', away_team_name_en:'Iran', local_date:'06/22/2026 03:00', stadium_id:'Los Angeles', type:'group', matchday:2, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:39, group:'H', home_team_name_en:'Uruguay', away_team_name_en:'Cape Verde', local_date:'06/22/2026 06:00', stadium_id:'Miami', type:'group', matchday:2, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:40, group:'G', home_team_name_en:'New Zealand', away_team_name_en:'Egypt', local_date:'06/22/2026 09:00', stadium_id:'Vancouver', type:'group', matchday:2, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:41, group:'J', home_team_name_en:'Argentina', away_team_name_en:'Austria', local_date:'06/23/2026 01:00', stadium_id:'Dallas', type:'group', matchday:2, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:42, group:'I', home_team_name_en:'France', away_team_name_en:'Iraq', local_date:'06/23/2026 05:00', stadium_id:'Philadelphia', type:'group', matchday:2, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:43, group:'I', home_team_name_en:'Norway', away_team_name_en:'Senegal', local_date:'06/23/2026 08:00', stadium_id:'New Jersey', type:'group', matchday:2, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:44, group:'J', home_team_name_en:'Jordan', away_team_name_en:'Algeria', local_date:'06/23/2026 11:00', stadium_id:'San Francisco', type:'group', matchday:2, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:45, group:'K', home_team_name_en:'Portugal', away_team_name_en:'Uzbekistan', local_date:'06/24/2026 01:00', stadium_id:'Houston', type:'group', matchday:2, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:46, group:'L', home_team_name_en:'England', away_team_name_en:'Ghana', local_date:'06/24/2026 04:00', stadium_id:'Boston', type:'group', matchday:2, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:47, group:'L', home_team_name_en:'Panama', away_team_name_en:'Croatia', local_date:'06/24/2026 07:00', stadium_id:'Toronto', type:'group', matchday:2, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:48, group:'K', home_team_name_en:'Colombia', away_team_name_en:'DR Congo', local_date:'06/24/2026 10:00', stadium_id:'Zapopan', type:'group', matchday:2, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:49, group:'B', home_team_name_en:'Switzerland', away_team_name_en:'Canada', local_date:'06/25/2026 03:00', stadium_id:'Vancouver', type:'group', matchday:3, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:50, group:'B', home_team_name_en:'Bosnia', away_team_name_en:'Qatar', local_date:'06/25/2026 03:00', stadium_id:'Seattle', type:'group', matchday:3, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:51, group:'C', home_team_name_en:'Scotland', away_team_name_en:'Brazil', local_date:'06/25/2026 06:00', stadium_id:'Miami', type:'group', matchday:3, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:52, group:'C', home_team_name_en:'Morocco', away_team_name_en:'Haiti', local_date:'06/25/2026 06:00', stadium_id:'Atlanta', type:'group', matchday:3, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:53, group:'A', home_team_name_en:'Czechia', away_team_name_en:'Mexico', local_date:'06/25/2026 09:00', stadium_id:'Mexico City', type:'group', matchday:3, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:54, group:'A', home_team_name_en:'South Africa', away_team_name_en:'South Korea', local_date:'06/25/2026 09:00', stadium_id:'Monterrey', type:'group', matchday:3, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:55, group:'E', home_team_name_en:'Ecuador', away_team_name_en:'Germany', local_date:'06/26/2026 04:00', stadium_id:'New Jersey', type:'group', matchday:3, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:56, group:'E', home_team_name_en:'Curaçao', away_team_name_en:'Ivory Coast', local_date:'06/26/2026 04:00', stadium_id:'Philadelphia', type:'group', matchday:3, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:57, group:'F', home_team_name_en:'Japan', away_team_name_en:'Sweden', local_date:'06/26/2026 07:00', stadium_id:'Dallas', type:'group', matchday:3, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:58, group:'F', home_team_name_en:'Tunisia', away_team_name_en:'Netherlands', local_date:'06/26/2026 07:00', stadium_id:'Kansas City', type:'group', matchday:3, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:59, group:'D', home_team_name_en:'Türkiye', away_team_name_en:'USA', local_date:'06/26/2026 10:00', stadium_id:'Los Angeles', type:'group', matchday:3, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:60, group:'D', home_team_name_en:'Paraguay', away_team_name_en:'Australia', local_date:'06/26/2026 10:00', stadium_id:'San Francisco', type:'group', matchday:3, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:61, group:'I', home_team_name_en:'Norway', away_team_name_en:'France', local_date:'06/27/2026 03:00', stadium_id:'Boston', type:'group', matchday:3, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:62, group:'I', home_team_name_en:'Senegal', away_team_name_en:'Iraq', local_date:'06/27/2026 03:00', stadium_id:'Toronto', type:'group', matchday:3, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:63, group:'H', home_team_name_en:'Cape Verde', away_team_name_en:'Saudi Arabia', local_date:'06/27/2026 08:00', stadium_id:'Houston', type:'group', matchday:3, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:64, group:'H', home_team_name_en:'Uruguay', away_team_name_en:'Spain', local_date:'06/27/2026 08:00', stadium_id:'Zapopan', type:'group', matchday:3, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:65, group:'G', home_team_name_en:'Egypt', away_team_name_en:'Iran', local_date:'06/27/2026 11:00', stadium_id:'Seattle', type:'group', matchday:3, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:66, group:'G', home_team_name_en:'New Zealand', away_team_name_en:'Belgium', local_date:'06/27/2026 11:00', stadium_id:'Vancouver', type:'group', matchday:3, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:67, group:'L', home_team_name_en:'Panama', away_team_name_en:'England', local_date:'06/28/2026 05:00', stadium_id:'New Jersey', type:'group', matchday:3, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:68, group:'L', home_team_name_en:'Croatia', away_team_name_en:'Ghana', local_date:'06/28/2026 05:00', stadium_id:'Philadelphia', type:'group', matchday:3, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:70, group:'K', home_team_name_en:'DR Congo', away_team_name_en:'Uzbekistan', local_date:'06/28/2026 07:30', stadium_id:'Atlanta', type:'group', matchday:3, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:69, group:'K', home_team_name_en:'Colombia', away_team_name_en:'Portugal', local_date:'06/28/2026 07:30', stadium_id:'Miami', type:'group', matchday:3, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:71, group:'J', home_team_name_en:'Algeria', away_team_name_en:'Austria', local_date:'06/28/2026 10:00', stadium_id:'Kansas City', type:'group', matchday:3, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:72, group:'J', home_team_name_en:'Jordan', away_team_name_en:'Argentina', local_date:'06/28/2026 10:00', stadium_id:'Dallas', type:'group', matchday:3, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      // Knockout – 32 matches
+      {id:73, group:'', home_team_name_en:'TBD', away_team_name_en:'TBD', local_date:'06/29/2026 03:00', stadium_id:'Los Angeles', type:'r32', matchday:1, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:74, group:'', home_team_name_en:'TBD', away_team_name_en:'TBD', local_date:'06/30/2026 03:00', stadium_id:'Houston', type:'r32', matchday:2, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:75, group:'', home_team_name_en:'TBD', away_team_name_en:'TBD', local_date:'06/30/2026 04:30', stadium_id:'Boston', type:'r32', matchday:3, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:76, group:'', home_team_name_en:'TBD', away_team_name_en:'TBD', local_date:'06/30/2026 09:00', stadium_id:'Monterrey', type:'r32', matchday:4, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:77, group:'', home_team_name_en:'TBD', away_team_name_en:'TBD', local_date:'07/01/2026 01:00', stadium_id:'Dallas', type:'r32', matchday:5, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:78, group:'', home_team_name_en:'TBD', away_team_name_en:'TBD', local_date:'07/01/2026 05:00', stadium_id:'New Jersey', type:'r32', matchday:6, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:79, group:'', home_team_name_en:'TBD', away_team_name_en:'TBD', local_date:'07/01/2026 09:00', stadium_id:'Mexico City', type:'r32', matchday:7, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:80, group:'', home_team_name_en:'TBD', away_team_name_en:'TBD', local_date:'07/02/2026 00:00', stadium_id:'Atlanta', type:'r32', matchday:8, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:81, group:'', home_team_name_en:'TBD', away_team_name_en:'TBD', local_date:'07/02/2026 04:00', stadium_id:'Seattle', type:'r32', matchday:9, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:82, group:'', home_team_name_en:'TBD', away_team_name_en:'TBD', local_date:'07/02/2026 08:00', stadium_id:'San Francisco', type:'r32', matchday:10, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:83, group:'', home_team_name_en:'TBD', away_team_name_en:'TBD', local_date:'07/03/2026 03:00', stadium_id:'Los Angeles', type:'r32', matchday:11, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:84, group:'', home_team_name_en:'TBD', away_team_name_en:'TBD', local_date:'07/03/2026 07:00', stadium_id:'Toronto', type:'r32', matchday:12, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:85, group:'', home_team_name_en:'TBD', away_team_name_en:'TBD', local_date:'07/03/2026 11:00', stadium_id:'Vancouver', type:'r32', matchday:13, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:86, group:'', home_team_name_en:'TBD', away_team_name_en:'TBD', local_date:'07/04/2026 02:00', stadium_id:'Dallas', type:'r32', matchday:14, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:87, group:'', home_team_name_en:'TBD', away_team_name_en:'TBD', local_date:'07/04/2026 06:00', stadium_id:'Miami', type:'r32', matchday:15, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:88, group:'', home_team_name_en:'TBD', away_team_name_en:'TBD', local_date:'07/04/2026 09:30', stadium_id:'Kansas City', type:'r32', matchday:16, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:89, group:'', home_team_name_en:'TBD', away_team_name_en:'TBD', local_date:'07/05/2026 01:00', stadium_id:'Houston', type:'r16', matchday:1, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:90, group:'', home_team_name_en:'TBD', away_team_name_en:'TBD', local_date:'07/05/2026 05:00', stadium_id:'Philadelphia', type:'r16', matchday:2, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:91, group:'', home_team_name_en:'TBD', away_team_name_en:'TBD', local_date:'07/06/2026 04:00', stadium_id:'New Jersey', type:'r16', matchday:3, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:92, group:'', home_team_name_en:'TBD', away_team_name_en:'TBD', local_date:'07/06/2026 08:00', stadium_id:'Mexico City', type:'r16', matchday:4, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:93, group:'', home_team_name_en:'TBD', away_team_name_en:'TBD', local_date:'07/07/2026 03:00', stadium_id:'Dallas', type:'r16', matchday:5, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:94, group:'', home_team_name_en:'TBD', away_team_name_en:'TBD', local_date:'07/07/2026 08:00', stadium_id:'Seattle', type:'r16', matchday:6, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:95, group:'', home_team_name_en:'TBD', away_team_name_en:'TBD', local_date:'07/08/2026 00:00', stadium_id:'Atlanta', type:'r16', matchday:7, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:96, group:'', home_team_name_en:'TBD', away_team_name_en:'TBD', local_date:'07/08/2026 04:00', stadium_id:'Vancouver', type:'r16', matchday:8, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:97, group:'', home_team_name_en:'TBD', away_team_name_en:'TBD', local_date:'07/10/2026 04:00', stadium_id:'Boston', type:'qf', matchday:1, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:98, group:'', home_team_name_en:'TBD', away_team_name_en:'TBD', local_date:'07/11/2026 03:00', stadium_id:'Los Angeles', type:'qf', matchday:2, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:99, group:'', home_team_name_en:'TBD', away_team_name_en:'TBD', local_date:'07/12/2026 04:00', stadium_id:'Miami', type:'qf', matchday:3, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:100, group:'', home_team_name_en:'TBD', away_team_name_en:'TBD', local_date:'07/12/2026 09:00', stadium_id:'Kansas City', type:'qf', matchday:4, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:101, group:'', home_team_name_en:'TBD', away_team_name_en:'TBD', local_date:'07/15/2026 03:00', stadium_id:'Dallas', type:'sf', matchday:1, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:102, group:'', home_team_name_en:'TBD', away_team_name_en:'TBD', local_date:'07/16/2026 03:00', stadium_id:'Atlanta', type:'sf', matchday:2, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:103, group:'', home_team_name_en:'TBD', away_team_name_en:'TBD', local_date:'07/19/2026 05:00', stadium_id:'Miami', type:'third', matchday:1, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
+      {id:104, group:'', home_team_name_en:'TBD', away_team_name_en:'TBD', local_date:'07/20/2026 03:00', stadium_id:'New York / New Jersey', type:'final', matchday:1, home_score:'0', away_score:'0', finished:'FALSE', time_elapsed:'notstarted'},
     ];
-
-    const FALLBACK_KO = [
-      {id:73, phase:'R32',n:1,  d:'2026-06-29',t:'03:00',v:'Los Angeles'},
-      {id:74, phase:'R32',n:2,  d:'2026-06-30',t:'03:00',v:'Houston'},
-      {id:75, phase:'R32',n:3,  d:'2026-06-30',t:'04:30',v:'Boston'},
-      {id:76, phase:'R32',n:4,  d:'2026-06-30',t:'09:00',v:'Monterrey'},
-      {id:77, phase:'R32',n:5,  d:'2026-07-01',t:'01:00',v:'Dallas'},
-      {id:78, phase:'R32',n:6,  d:'2026-07-01',t:'05:00',v:'New Jersey'},
-      {id:79, phase:'R32',n:7,  d:'2026-07-01',t:'09:00',v:'Mexico City'},
-      {id:80, phase:'R32',n:8,  d:'2026-07-02',t:'00:00',v:'Atlanta'},
-      {id:81, phase:'R32',n:9,  d:'2026-07-02',t:'04:00',v:'Seattle'},
-      {id:82, phase:'R32',n:10, d:'2026-07-02',t:'08:00',v:'San Francisco'},
-      {id:83, phase:'R32',n:11, d:'2026-07-03',t:'03:00',v:'Los Angeles'},
-      {id:84, phase:'R32',n:12, d:'2026-07-03',t:'07:00',v:'Toronto'},
-      {id:85, phase:'R32',n:13, d:'2026-07-03',t:'11:00',v:'Vancouver'},
-      {id:86, phase:'R32',n:14, d:'2026-07-04',t:'02:00',v:'Dallas'},
-      {id:87, phase:'R32',n:15, d:'2026-07-04',t:'06:00',v:'Miami'},
-      {id:88, phase:'R32',n:16, d:'2026-07-04',t:'09:30',v:'Kansas City'},
-      {id:89, phase:'R16',n:1,  d:'2026-07-05',t:'01:00',v:'Houston'},
-      {id:90, phase:'R16',n:2,  d:'2026-07-05',t:'05:00',v:'Philadelphia'},
-      {id:91, phase:'R16',n:3,  d:'2026-07-06',t:'04:00',v:'New Jersey'},
-      {id:92, phase:'R16',n:4,  d:'2026-07-06',t:'08:00',v:'Mexico City'},
-      {id:93, phase:'R16',n:5,  d:'2026-07-07',t:'03:00',v:'Dallas'},
-      {id:94, phase:'R16',n:6,  d:'2026-07-07',t:'08:00',v:'Seattle'},
-      {id:95, phase:'R16',n:7,  d:'2026-07-08',t:'00:00',v:'Atlanta'},
-      {id:96, phase:'R16',n:8,  d:'2026-07-08',t:'04:00',v:'Vancouver'},
-      {id:97, phase:'QF', n:1,  d:'2026-07-10',t:'04:00',v:'Boston'},
-      {id:98, phase:'QF', n:2,  d:'2026-07-11',t:'03:00',v:'Los Angeles'},
-      {id:99, phase:'QF', n:3,  d:'2026-07-12',t:'04:00',v:'Miami'},
-      {id:100,phase:'QF', n:4,  d:'2026-07-12',t:'09:00',v:'Kansas City'},
-      {id:101,phase:'SF', n:1,  d:'2026-07-15',t:'03:00',v:'Dallas'},
-      {id:102,phase:'SF', n:2,  d:'2026-07-16',t:'03:00',v:'Atlanta'},
-      {id:103,phase:'BRONZE',n:1,d:'2026-07-19',t:'05:00',v:'Miami'},
-      {id:104,phase:'FINAL', n:1,d:'2026-07-20',t:'03:00',v:'New York / New Jersey'},
-    ];
-
-    // ============================================================
-    //  API HELPERS (dengan fallback)
-    // ============================================================
-    const API_BASE = 'https://worldcup26.ir';
-    const PROXIES = [
-      (url) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
-      (url) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
-      (url) => `https://cors-anywhere.herokuapp.com/${url}`,
-    ];
-
-    async function fetchWithFallback(endpoint, token) {
-      const fullUrl = `${API_BASE}${endpoint}`;
-      const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
-
-      // Try direct first (might fail CORS but worth a shot)
-      try {
-        const res = await fetch(fullUrl, { headers });
-        if (res.ok) return await res.json();
-      } catch (e) {
-        console.warn('Direct fetch failed, trying proxies...');
-      }
-
-      // Try proxies
-      for (const proxyFn of PROXIES) {
-        try {
-          const proxyUrl = proxyFn(fullUrl);
-          const res = await fetch(proxyUrl, { headers });
-          if (res.ok) {
-            const data = await res.json();
-            console.log('✅ Proxy success:', proxyUrl);
-            return data;
-          }
-        } catch (e) {
-          console.warn('Proxy failed:', e.message);
-        }
-      }
-
-      throw new Error('All fetch attempts failed');
-    }
 
     // ============================================================
     //  REACT COMPONENTS
@@ -357,9 +316,9 @@
       }
     }
 
-    // ── Group Card (with score) ──
+    // ── Group Card ──
     function GroupCard({ m, isFav, toggleFav, now }) {
-      const c = GC[m.g] || '#00E8FF';
+      const c = GC[m.group] || '#00E8FF';
       const mood = getMood(m.t);
       const status = getMatchStatus(m.d, m.t, now, m.finished, m.time_elapsed);
       const showScore = (m.finished === 'TRUE' || m.finished === true) || (m.time_elapsed && m.time_elapsed !== 'notstarted' && m.time_elapsed !== '0');
@@ -372,7 +331,7 @@
           <div>
             <div className="flex justify-between items-center mb-2">
               <span className="text-[10px] font-extrabold tracking-wider px-2 py-0.5 rounded-full" style={{ background: `${c}15`, border: `1px solid ${c}40`, color: c }}>
-                GROUP {m.g}
+                GROUP {m.group}
               </span>
               <div className="flex items-center gap-2">
                 <span className="text-xs text-slate-400">{mood.icon}</span>
@@ -432,10 +391,18 @@
       );
     }
 
-    // ── Knockout Card (with score) ──
+    // ── Knockout Card ──
     function KoCard({ m, now }) {
-      const isFinal = m.phase === 'FINAL';
-      const isBronze = m.phase === 'BRONZE';
+      const phaseMap = {
+        'r32': 'Round of 32',
+        'r16': 'Round of 16',
+        'qf': 'Quarter-finals',
+        'sf': 'Semi-finals',
+        'third': '3rd Place Match 🥉',
+        'final': '🏆 GRAND FINAL'
+      };
+      const isFinal = m.type === 'final';
+      const isBronze = m.type === 'third';
       const c = isFinal ? '#F5C518' : isBronze ? '#CD7F32' : '#00E8FF';
       const mood = getMood(m.t);
       const status = getMatchStatus(m.d, m.t, now, m.finished, m.time_elapsed);
@@ -449,7 +416,7 @@
           <div>
             <div className="flex justify-between items-center mb-3">
               <span className="text-[10px] font-extrabold tracking-wider px-2 py-0.5 rounded-full" style={{ background: `${c}15`, border: `1px solid ${c}40`, color: c }}>
-                {PHASE_LABELS[m.phase] || m.phase} #{m.n}
+                {phaseMap[m.type] || m.type} #{m.matchday}
               </span>
               <span className="text-xs text-slate-400">{mood.icon}</span>
             </div>
@@ -457,7 +424,7 @@
             <div className="flex items-center justify-around my-4">
               <div className="text-center flex-1">
                 <div className="text-2xl opacity-20">⚽</div>
-                <div className="text-[10px] text-slate-500 italic mt-1 font-medium">TBD</div>
+                <div className="text-[10px] text-slate-500 italic mt-1 font-medium">{m.h}</div>
               </div>
               <div className="text-center px-4">
                 {showScore ? (
@@ -473,7 +440,7 @@
               </div>
               <div className="text-center flex-1">
                 <div className="text-2xl opacity-20">⚽</div>
-                <div className="text-[10px] text-slate-500 italic mt-1 font-medium">TBD</div>
+                <div className="text-[10px] text-slate-500 italic mt-1 font-medium">{m.a}</div>
               </div>
             </div>
 
@@ -498,9 +465,8 @@
     function App() {
       const [token, setToken] = useState(() => localStorage.getItem('wc_token') || '');
       const [matches, setMatches] = useState([]);
-      const [loading, setLoading] = useState(true);
-      const [error, setError] = useState(null);
-      const [usingFallback, setUsingFallback] = useState(false);
+      const [loading, setLoading] = useState(false);
+      const [usingFallback, setUsingFallback] = useState(true);
       const [lastFetch, setLastFetch] = useState(null);
 
       const [tab, setTab] = useState('GS');
@@ -555,95 +521,67 @@
         if (token) localStorage.setItem('wc_token', token);
       }, [token]);
 
-      // ── Fetch function with fallback ──
-      const fetchMatches = useCallback(async (force = false) => {
-        setLoading(true);
-        setError(null);
-        setUsingFallback(false);
+      // ── Load matches (always use fallback + try API) ──
+      useEffect(() => {
+        // Always load fallback first
+        setMatches(ALL_MATCHES_HARDCODED);
+        setUsingFallback(true);
+        setLastFetch(new Date());
 
-        try {
-          let data = null;
-          if (token) {
-            try {
-              data = await fetchWithFallback('/get/games', token);
-            } catch (err) {
-              console.warn('API fetch failed, using fallback data:', err);
+        // Try API if token exists
+        if (token) {
+          setLoading(true);
+          const CORS_PROXY = 'https://corsproxy.io/?';
+          const url = `${CORS_PROXY}${encodeURIComponent('https://worldcup26.ir/get/games')}`;
+          fetch(url, {
+            headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+          })
+          .then(res => res.ok ? res.json() : null)
+          .then(data => {
+            if (data && data.games && data.games.length > 0) {
+              setMatches(data.games);
+              setUsingFallback(false);
+              setLastFetch(new Date());
             }
-          }
-
-          if (data && data.games && data.games.length > 0) {
-            setMatches(data.games);
-            setUsingFallback(false);
-          } else {
-            // Use fallback
-            console.log('Using fallback data');
-            const fallbackData = [...FALLBACK_GS, ...FALLBACK_KO];
-            setMatches(fallbackData.map(m => ({
-              ...m,
-              type: m.phase ? 'ko' : 'group',
-              home_team_name_en: m.h,
-              away_team_name_en: m.a,
-              home_score: '0',
-              away_score: '0',
-              finished: 'FALSE',
-              time_elapsed: 'notstarted',
-              local_date: `${m.d.split('-')[1]}/${m.d.split('-')[2]}/${m.d.split('-')[0]} ${m.t}:00`,
-              stadium_id: m.v,
-              matchday: m.n || 1
-            })));
-            setUsingFallback(true);
-          }
-          setLastFetch(new Date());
-        } catch (err) {
-          setError(err.message);
-          // Last resort: use fallback
-          const fallbackData = [...FALLBACK_GS, ...FALLBACK_KO];
-          setMatches(fallbackData.map(m => ({
-            ...m,
-            type: m.phase ? 'ko' : 'group',
-            home_team_name_en: m.h,
-            away_team_name_en: m.a,
-            home_score: '0',
-            away_score: '0',
-            finished: 'FALSE',
-            time_elapsed: 'notstarted',
-            local_date: `${m.d.split('-')[1]}/${m.d.split('-')[2]}/${m.d.split('-')[0]} ${m.t}:00`,
-            stadium_id: m.v,
-            matchday: m.n || 1
-          })));
-          setUsingFallback(true);
-        } finally {
-          setLoading(false);
+            setLoading(false);
+          })
+          .catch(() => {
+            setLoading(false);
+            // Keep fallback
+          });
         }
       }, [token]);
 
-      // ── Initial fetch ──
-      useEffect(() => {
-        fetchMatches();
-      }, [fetchMatches]);
-
-      // ── Polling every 30 seconds (only if not using fallback) ──
+      // ── Polling ──
       useEffect(() => {
         if (!token || usingFallback) return;
         const interval = setInterval(() => {
-          fetchMatches(true);
+          const CORS_PROXY = 'https://corsproxy.io/?';
+          const url = `${CORS_PROXY}${encodeURIComponent('https://worldcup26.ir/get/games')}`;
+          fetch(url, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          })
+          .then(res => res.ok ? res.json() : null)
+          .then(data => {
+            if (data && data.games && data.games.length > 0) {
+              setMatches(data.games);
+              setUsingFallback(false);
+              setLastFetch(new Date());
+            }
+          })
+          .catch(() => {});
         }, 30000);
         return () => clearInterval(interval);
-      }, [token, usingFallback, fetchMatches]);
+      }, [token, usingFallback]);
 
-      // ── Transform API matches to internal format ──
+      // ── Transform ──
       const transformed = useMemo(() => {
-        if (!matches.length) return [];
         return matches.map(m => {
           let isoDate, timeStr;
-          if (m.d) {
-            // Already in YYYY-MM-DD format from fallback
-            isoDate = m.d;
-            timeStr = m.t || '00:00';
-          } else if (m.local_date) {
+          if (m.local_date) {
             const parts = m.local_date.split(' ');
             const dateStr = parts[0];
-            timeStr = parts[1];
+            timeStr = parts[1] || '00:00';
             const [month, day, year] = dateStr.split('/');
             isoDate = `${year}-${month.padStart(2,'0')}-${day.padStart(2,'0')}`;
           } else {
@@ -651,34 +589,22 @@
             timeStr = '00:00';
           }
 
-          const phaseMap = {
-            'group': 'GS',
-            'r32': 'R32',
-            'r16': 'R16',
-            'qf': 'QF',
-            'sf': 'SF',
-            'third': 'BRONZE',
-            'final': 'FINAL'
-          };
-          const phase = phaseMap[m.type] || 'GS';
-
           return {
             id: parseInt(m.id) || 0,
-            g: m.group || m.g || '',
-            h: m.home_team_name_en || m.h || 'TBD',
-            a: m.away_team_name_en || m.a || 'TBD',
+            group: m.group || '',
+            h: m.home_team_name_en || 'TBD',
+            a: m.away_team_name_en || 'TBD',
             d: isoDate,
             t: timeStr,
-            v: m.stadium_id || m.v || 'TBD',
-            phase: phase,
-            n: parseInt(m.matchday) || parseInt(m.n) || 1,
+            v: m.stadium_id || 'TBD',
+            type: m.type || 'group',
+            matchday: parseInt(m.matchday) || 1,
             home_score: m.home_score || '0',
             away_score: m.away_score || '0',
             finished: m.finished === 'TRUE' || m.finished === true,
             time_elapsed: m.time_elapsed || 'notstarted',
             home_scorers: m.home_scorers || null,
             away_scorers: m.away_scorers || null,
-            type: m.type || 'group'
           };
         });
       }, [matches]);
@@ -688,8 +614,11 @@
 
       // ── Filtering ──
       const filteredMatches = useMemo(() => {
-        let arr = tab === 'GS' ? GS_MATCHES : KO_MATCHES.filter(m => m.phase === tab);
-        if (tab === 'GS' && grp !== 'ALL') arr = arr.filter(m => m.g === grp);
+        let arr = tab === 'GS' ? GS_MATCHES : KO_MATCHES.filter(m => {
+          const phaseMap = { 'r32':'R32', 'r16':'R16', 'qf':'QF', 'sf':'SF', 'third':'BRONZE', 'final':'FINAL' };
+          return phaseMap[m.type] === tab;
+        });
+        if (tab === 'GS' && grp !== 'ALL') arr = arr.filter(m => m.group === grp);
         if (statusFilter !== 'ALL') {
           arr = arr.filter(m => getMatchStatus(m.d, m.t, now, m.finished, m.time_elapsed).code === statusFilter);
         }
@@ -743,6 +672,7 @@
         {id:'FINAL', label:'FINAL 🏆'},
       ];
 
+      // ── Token Input ──
       const TokenInput = () => (
         <div className="glass border border-slate-700 rounded-xl p-4 mb-6 flex flex-wrap items-center gap-3">
           <span className="text-xs font-bold text-slate-400">🔑 Token:</span>
@@ -750,13 +680,16 @@
             type="text"
             value={token}
             onChange={e => setToken(e.target.value.trim())}
-            placeholder="Paste token from PowerShell..."
+            placeholder="Paste token (optional – leave blank to use fallback data)"
             className="flex-1 min-w-[200px] bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-cyan-500"
           />
           {token && <span className="text-xs text-green-400">✅ Token set</span>}
-          {!token && <span className="text-xs text-amber-400">⚠️ Masukkan token</span>}
+          {!token && <span className="text-xs text-amber-400">⚠️ Using fallback data</span>}
           {usingFallback && (
-            <span className="text-xs text-amber-400">⚠️ Using fallback data (API unavailable)</span>
+            <span className="text-xs text-amber-400">⚠️ Fallback mode (no live scores)</span>
+          )}
+          {!usingFallback && (
+            <span className="text-xs text-green-400">✅ Live mode</span>
           )}
           {lastFetch && (
             <span className="text-[10px] text-slate-500 ml-auto">
@@ -764,7 +697,26 @@
             </span>
           )}
           <button
-            onClick={() => fetchMatches(true)}
+            onClick={() => {
+              if (token) {
+                setLoading(true);
+                const CORS_PROXY = 'https://corsproxy.io/?';
+                const url = `${CORS_PROXY}${encodeURIComponent('https://worldcup26.ir/get/games')}`;
+                fetch(url, {
+                  headers: { 'Authorization': `Bearer ${token}` }
+                })
+                .then(res => res.ok ? res.json() : null)
+                .then(data => {
+                  if (data && data.games && data.games.length > 0) {
+                    setMatches(data.games);
+                    setUsingFallback(false);
+                    setLastFetch(new Date());
+                  }
+                  setLoading(false);
+                })
+                .catch(() => setLoading(false));
+              }
+            }}
             className="px-3 py-1.5 bg-cyan-600 hover:bg-cyan-500 rounded-lg text-xs font-bold transition-colors"
           >
             ↻ Refresh
@@ -775,7 +727,7 @@
       if (loading && !matches.length) {
         return (
           <div className="max-w-7xl mx-auto px-4 py-8 text-center text-slate-400">
-            <div className="animate-pulse">⏳ Loading matches from API...</div>
+            <div className="animate-pulse">⏳ Loading matches...</div>
           </div>
         );
       }
@@ -802,6 +754,9 @@
                   <span>104 Matches</span>
                   <span className="text-slate-700">•</span>
                   <span>June 11 – July 20, 2026</span>
+                  {usingFallback && (
+                    <span className="text-amber-400 text-[10px] font-bold">(FALLBACK MODE)</span>
+                  )}
                 </div>
               </div>
 
@@ -979,7 +934,7 @@
           </div>
 
           <footer className="mt-16 pt-6 border-t border-slate-900 text-center text-[10px] text-slate-600 font-medium tracking-wide flex flex-col items-center gap-1.5">
-            <span>Data powered by worldcup26.ir API {usingFallback && '(FALLBACK MODE)'} · Live scores update every 30s · All times MYT (UTC+8)</span>
+            <span>Data powered by worldcup26.ir API {usingFallback && '(FALLBACK MODE – no live scores)'} · All times MYT (UTC+8)</span>
             <span className="text-slate-500 font-bold mt-0.5 tracking-wider">©2026 mfzf. All rights reserved.</span>
           </footer>
         </div>
